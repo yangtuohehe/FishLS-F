@@ -1,10 +1,14 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router/index.js' // 引入路由配置文件
+import { createRouter, createWebHistory } from 'vue-router';
+import Overview from '../views/Overview.vue';
+import RealtimeMonitor from '../views/RealtimeMonitor.vue';
 
-const app = createApp(App)
+const router = createRouter({
+  history: createWebHistory(),
+  routes: [
+    { path: '/', redirect: '/overview' },
+    { path: '/overview', component: Overview },
+    { path: '/monitor', component: RealtimeMonitor }
+  ]
+});
 
-// 关键步骤：告诉 Vue 实例使用这个路由
-app.use(router) 
-
-app.mount('#app')
+export default router;

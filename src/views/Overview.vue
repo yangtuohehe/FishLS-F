@@ -10,23 +10,18 @@
       <div class="main-zone-left" v-if="leftZoneComps.length > 0">
         <div class="comp-wrapper" v-for="comp in leftZoneComps" :key="comp.id">
           <PieChart v-if="comp.type === 'pie'" v-bind="comp.props" />
-          <BarChart v-if="comp.type === 'bar'" v-bind="comp.props" />
-          <LineChart v-if="comp.type === 'line'" v-bind="comp.props" />
         </div>
       </div>
 
       <div class="main-zone-center">
         <div class="cesium-earth-container">
-          <div class="cesium-placeholder-text">Cesium 三维数字孪生场景区域</div>
-          <div class="cesium-placeholder-subtext">外围面板隐藏后此区域自动填充扩张</div>
+          <CesiumViewer />
         </div>
       </div>
 
       <div class="main-zone-right" v-if="rightZoneComps.length > 0">
         <div class="comp-wrapper" v-for="comp in rightZoneComps" :key="comp.id">
-          <PieChart v-if="comp.type === 'pie'" v-bind="comp.props" />
-          <BarChart v-if="comp.type === 'bar'" v-bind="comp.props" />
-          <LineChart v-if="comp.type === 'line'" v-bind="comp.props" />
+          <DynamicList v-if="comp.type === 'list'" v-bind="comp.props" />
         </div>
       </div>
     </div>
@@ -35,6 +30,7 @@
       <div class="comp-wrapper" v-for="comp in bottomZoneComps" :key="comp.id">
         <LineChart v-if="comp.type === 'line'" v-bind="comp.props" />
         <BarChart v-if="comp.type === 'bar'" v-bind="comp.props" />
+        <StackedBarChart v-if="comp.type === 'stacked-bar'" v-bind="comp.props" />
       </div>
     </div>
   </div>
@@ -42,21 +38,19 @@
 
 <script setup>
 import { computed } from 'vue';
+import { globalStore } from '../store.js';
 import DataCard from '../components/ui/DataCard.vue';
 import BarChart from '../components/charts/BarChart.vue';
 import LineChart from '../components/charts/LineChart.vue';
 import PieChart from '../components/charts/PieChart.vue';
-
-const props = defineProps({
-  menuGroups: {
-    type: Array,
-    default: () => []
-  }
-});
+import StackedBarChart from '../components/charts/StackedBarChart.vue';
+import DynamicList from '../components/ui/DynamicList.vue';
+import CesiumViewer from '../components/ui/CesiumViewer.vue';
 
 const activeComponents = computed(() => {
   const comps = [];
-  props.menuGroups.forEach(group => {
+  const currentMenus = globalStore.pageMenus['/overview'] || [];
+  currentMenus.forEach(group => {
     group.children.forEach(child => {
       if (child.visible) comps.push(child);
     });
@@ -101,7 +95,7 @@ const bottomZoneComps = computed(() => activeComponents.value.filter(c => c.zone
   display: flex;
   flex-direction: column;
   gap: 12px;
-  width: 320px;
+  width: 340px;
   flex-shrink: 0;
 }
 
@@ -119,30 +113,13 @@ const bottomZoneComps = computed(() => activeComponents.value.filter(c => c.zone
 .cesium-earth-container {
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at center, #1b263b 0%, #0d1b2a 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #415a77;
-}
-
-.cesium-placeholder-text {
-  font-size: 24px;
-  font-weight: bold;
-  letter-spacing: 2px;
-  margin-bottom: 12px;
-}
-
-.cesium-placeholder-subtext {
-  font-size: 14px;
 }
 
 .main-zone-bottom {
   display: flex;
   gap: 12px;
   flex-shrink: 0;
-  height: 260px;
+  height: 280px;
 }
 
 .comp-wrapper {
