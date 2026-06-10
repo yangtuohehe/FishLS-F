@@ -5,6 +5,7 @@
         <span class="logo-icon">🌊</span>
         <span class="logo-text">海洋牧场智慧监管平台</span>
       </div>
+
       <div class="sys-actions">
         <span class="action-item" @click="isSidebarVisible = !isSidebarVisible">
           {{ isSidebarVisible ? '隐藏侧边栏' : '显示侧边栏' }}
@@ -15,40 +16,47 @@
 
     <div class="sys-body">
       <aside class="sys-sidebar" v-show="isSidebarVisible">
-        <TreeMenu :menus="menuGroups" />
+        <div class="sidebar-accordion-container">
+          
+          <div v-for="menu in globalStore.systemMenus" :key="menu.id" class="accordion-group">
+            
+            <router-link 
+              :to="menu.path" 
+              class="accordion-header"
+              active-class="accordion-header-active"
+            >
+              <span class="nav-icon">{{ menu.icon }}</span>
+              <span class="nav-label">{{ menu.label }}</span>
+            </router-link>
+
+            <div v-show="currentActivePath === menu.path" class="accordion-body">
+              <TreeMenu :menus="globalStore.pageMenus[menu.path] || []" />
+            </div>
+
+          </div>
+          
+        </div>
       </aside>
 
       <main class="sys-main">
-        <router-view :menuGroups="menuGroups"></router-view>
+        <router-view></router-view>
       </main>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useRoute } from 'vue-router';
+import { globalStore } from './store.js';
 import TreeMenu from './components/ui/TreeMenu.vue';
 
 const isSidebarVisible = ref(true);
+const route = useRoute();
 
-const menuGroups = ref([
-  {
-    id: 'view',
-    label: '监督总览面板控制',
-    open: true,
-    children: [
-      { id: 't1', label: '顶部: 养殖区数量', visible: true, zone: 'top', type: 'card', props: { label: '养殖区数量', value: '12', unit: '个', description: '较昨日', statusText: '↑ 2', statusType: 'up' } },
-      { id: 't2', label: '顶部: 网箱数量', visible: true, zone: 'top', type: 'card', props: { label: '网箱数量', value: '186', unit: '口', description: '较昨日', statusText: '↑ 5', statusType: 'up' } },
-      { id: 't3', label: '顶部: 监测点数量', visible: true, zone: 'top', type: 'card', props: { label: '监测点数量', value: '98', unit: '个', description: '较昨日', statusText: '↑ 3', statusType: 'up' } },
-      { id: 't4', label: '顶部: 在线设备率', visible: true, zone: 'top', type: 'card', props: { label: '在线设备率', value: '90.2', unit: '%', description: '较昨日', statusText: '↑ 1.2%', statusType: 'up' } },
-      { id: 'l1', label: '左侧: 设备在线率饼图', visible: true, zone: 'left', type: 'pie', props: { title: '设备在线率', chartData: [{name: '在线', value: 231}, {name: '离线', value: 18}, {name: '故障', value: 7}] } },
-      { id: 'r1', label: '右侧: 风险等级分布', visible: true, zone: 'right', type: 'pie', props: { title: '风险等级分布', chartData: [{name: '高风险', value: 2}, {name: '较高风险', value: 3}, {name: '中风险', value: 4}, {name: '低风险', value: 3}] } },
-      { id: 'b1', label: '底部: 溶解氧趋势', visible: true, zone: 'bottom', type: 'line', props: { title: '溶解氧变化趋势(mg/L)', xAxisData: ['00:00', '06:00', '12:00', '18:00'], seriesData: [{name: '养殖区A', data: [6.5, 7.2, 6.8, 7.5]}, {name: '养殖区B', data: [5.5, 6.0, 5.8, 6.2]}] } },
-      { id: 'b2', label: '底部: 水温变化趋势', visible: true, zone: 'bottom', type: 'line', props: { title: '水温变化趋势(°C)', xAxisData: ['00:00', '06:00', '12:00', '18:00'], seriesData: [{name: '养殖区A', data: [24, 25, 26, 25]}, {name: '养殖区B', data: [23, 24, 25, 24]}] } },
-      { id: 'b3', label: '底部: 预警数量统计', visible: true, zone: 'bottom', type: 'bar', props: { title: '预警数量趋势(条)', categories: ['05-26', '05-27', '05-28', '05-29', '05-30'], values: [15, 20, 25, 18, 30] } }
-    ]
-  }
-]);
+const currentActivePath = computed(() => {
+  return route.path === '/' ? '/overview' : route.path;
+});
 </script>
 
 <style scoped>
@@ -63,13 +71,14 @@ const menuGroups = ref([
 }
 
 .sys-header {
-  height: 56px;
-  background-color: #ffffff;
+  height: 60px;
+  background-color: #0d1b2a;
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 24px;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   z-index: 10;
   flex-shrink: 0;
 }
@@ -78,6 +87,7 @@ const menuGroups = ref([
   display: flex;
   align-items: center;
   gap: 12px;
+  width: 260px;
 }
 
 .logo-icon {
@@ -87,7 +97,6 @@ const menuGroups = ref([
 .logo-text {
   font-size: 18px;
   font-weight: bold;
-  color: #1890ff;
   letter-spacing: 1px;
 }
 
@@ -96,13 +105,19 @@ const menuGroups = ref([
   align-items: center;
   gap: 20px;
   font-size: 14px;
-  color: #606266;
 }
 
 .action-item {
   cursor: pointer;
-  color: #1890ff;
-  font-weight: 500;
+  color: #90cdf4;
+}
+
+.action-item:hover {
+  color: #ffffff;
+}
+
+.user-info {
+  cursor: pointer;
 }
 
 .sys-body {
@@ -116,8 +131,51 @@ const menuGroups = ref([
   width: 260px;
   background-color: #ffffff;
   border-right: 1px solid #e4e7ed;
+  display: flex;
+  flex-direction: column;
   flex-shrink: 0;
   transition: width 0.3s;
+}
+
+.sidebar-accordion-container {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.accordion-group {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid #f0f2f5;
+}
+
+.accordion-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  text-decoration: none;
+  color: #303133;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  background-color: #fafafa;
+}
+
+.accordion-header:hover {
+  background-color: #f0f7ff;
+  color: #1890ff;
+}
+
+.accordion-header-active {
+  background-color: #e6f7ff;
+  color: #1890ff;
+  font-weight: bold;
+  border-left: 4px solid #1890ff;
+}
+
+.accordion-body {
+  background-color: #ffffff;
 }
 
 .sys-main {

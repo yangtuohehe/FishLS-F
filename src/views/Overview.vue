@@ -1,7 +1,13 @@
 <template>
   <div class="overview-container">
-    <div class="main-zone-top" v-if="topZoneComps.length > 0">
-      <div class="comp-wrapper" v-for="comp in topZoneComps" :key="comp.id">
+    <div class="main-zone-top" v-if="top1ZoneComps.length > 0">
+      <div class="comp-wrapper" v-for="comp in top1ZoneComps" :key="comp.id">
+        <DataCard v-if="comp.type === 'card'" v-bind="comp.props" />
+      </div>
+    </div>
+
+    <div class="main-zone-top" v-if="top2ZoneComps.length > 0">
+      <div class="comp-wrapper" v-for="comp in top2ZoneComps" :key="comp.id">
         <DataCard v-if="comp.type === 'card'" v-bind="comp.props" />
       </div>
     </div>
@@ -26,8 +32,16 @@
       </div>
     </div>
 
-    <div class="main-zone-bottom" v-if="bottomZoneComps.length > 0">
-      <div class="comp-wrapper" v-for="comp in bottomZoneComps" :key="comp.id">
+    <div class="main-zone-bottom" v-if="bottom1ZoneComps.length > 0">
+      <div class="comp-wrapper" v-for="comp in bottom1ZoneComps" :key="comp.id">
+        <LineChart v-if="comp.type === 'line'" v-bind="comp.props" />
+        <BarChart v-if="comp.type === 'bar'" v-bind="comp.props" />
+        <StackedBarChart v-if="comp.type === 'stacked-bar'" v-bind="comp.props" />
+      </div>
+    </div>
+
+    <div class="main-zone-bottom" v-if="bottom2ZoneComps.length > 0">
+      <div class="comp-wrapper" v-for="comp in bottom2ZoneComps" :key="comp.id">
         <LineChart v-if="comp.type === 'line'" v-bind="comp.props" />
         <BarChart v-if="comp.type === 'bar'" v-bind="comp.props" />
         <StackedBarChart v-if="comp.type === 'stacked-bar'" v-bind="comp.props" />
@@ -58,10 +72,12 @@ const activeComponents = computed(() => {
   return comps;
 });
 
-const topZoneComps = computed(() => activeComponents.value.filter(c => c.zone === 'top'));
+const top1ZoneComps = computed(() => activeComponents.value.filter(c => c.zone === 'top1'));
+const top2ZoneComps = computed(() => activeComponents.value.filter(c => c.zone === 'top2'));
 const leftZoneComps = computed(() => activeComponents.value.filter(c => c.zone === 'left'));
 const rightZoneComps = computed(() => activeComponents.value.filter(c => c.zone === 'right'));
-const bottomZoneComps = computed(() => activeComponents.value.filter(c => c.zone === 'bottom'));
+const bottom1ZoneComps = computed(() => activeComponents.value.filter(c => c.zone === 'bottom1'));
+const bottom2ZoneComps = computed(() => activeComponents.value.filter(c => c.zone === 'bottom2'));
 </script>
 
 <style scoped>
@@ -72,24 +88,22 @@ const bottomZoneComps = computed(() => activeComponents.value.filter(c => c.zone
   padding: 12px;
   gap: 12px;
   min-width: 0;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
-
 .main-zone-top {
   display: flex;
   gap: 12px;
   flex-shrink: 0;
   height: 100px;
 }
-
 .main-zone-middle {
   display: flex;
   flex: 1;
   gap: 12px;
-  min-height: 0;
+  min-height: 400px;
   min-width: 0;
 }
-
 .main-zone-left,
 .main-zone-right {
   display: flex;
@@ -98,7 +112,6 @@ const bottomZoneComps = computed(() => activeComponents.value.filter(c => c.zone
   width: 340px;
   flex-shrink: 0;
 }
-
 .main-zone-center {
   flex: 1;
   display: flex;
@@ -109,19 +122,16 @@ const bottomZoneComps = computed(() => activeComponents.value.filter(c => c.zone
   border: 1px solid #1b263b;
   overflow: hidden;
 }
-
 .cesium-earth-container {
   width: 100%;
   height: 100%;
 }
-
 .main-zone-bottom {
   display: flex;
   gap: 12px;
   flex-shrink: 0;
   height: 280px;
 }
-
 .comp-wrapper {
   flex: 1;
   min-width: 0;
