@@ -1,4 +1,4 @@
-
+<!-- 
 <template>
   <div class="app-root">
     <header class="app-header">
@@ -277,9 +277,10 @@ body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
   position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;
 }
 .center-overlay-layer > * { pointer-events: auto; }
-</style>
+</style> -->
 
-<!-- <template>
+
+<template>
   <div class="app-root">
     <header class="app-header">
       <div class="header-left-space"></div>
@@ -314,7 +315,7 @@ body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
           <div class="resizer-v" @mousedown="startDragLeft" v-show="hasLeft"></div>
 
           <div class="workspace-center">
-            <div ref="appEarthHost" style="width: 100%; height: 100%; pointer-events: auto;"></div>
+            <CesiumViewer />
             <div class="center-overlay-layer">
               <router-view></router-view>
             </div>
@@ -338,14 +339,13 @@ body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
 </template>
 
 <script setup>
-import { computed, ref, onBeforeUnmount, watch, nextTick } from 'vue';
+import { computed, ref, onBeforeUnmount } from 'vue';
 import { useRoute } from 'vue-router';
 import { globalStore } from './store.js';
 import TreeMenu from './components/ui/TreeMenu.vue';
-import { getGlobalCesium } from './utils/cesiumManager.js';
+import CesiumViewer from './components/ui/CesiumViewer.vue';
 
 const route = useRoute();
-const appEarthHost = ref(null);
 
 const activeComponents = computed(() => {
   const comps = [];
@@ -387,32 +387,6 @@ const startDragTop = (e) => { startY = e.clientY; startHeightTop = topHeight.val
 const onDragBottom = (e) => { bottomHeight.value = Math.max(80, Math.min(startHeightBottom - (e.clientY - startY), 500)); };
 const stopDragBottom = () => { document.removeEventListener('mousemove', onDragBottom); document.removeEventListener('mouseup', stopDragBottom); document.body.style.userSelect = ''; };
 const startDragBottom = (e) => { startY = e.clientY; startHeightBottom = bottomHeight.value; document.addEventListener('mousemove', onDragBottom); document.addEventListener('mouseup', stopDragBottom); document.body.style.userSelect = 'none'; };
-
-watch(() => route.path, (newPath) => {
-  const isMonitorPage = newPath.toLowerCase().includes('monitor');
-  
-  if (!isMonitorPage) {
-    nextTick(() => {
-      if (appEarthHost.value) {
-        const { viewer, cesiumContainer } = getGlobalCesium();
-        
-        if (cesiumContainer.parentNode) {
-          cesiumContainer.parentNode.removeChild(cesiumContainer);
-        }
-        
-        appEarthHost.value.appendChild(cesiumContainer);
-        cesiumContainer.style.display = 'block';
-        
-        requestAnimationFrame(() => {
-          if (viewer) {
-            viewer.resize();
-            viewer.scene.requestRender();
-          }
-        });
-      }
-    });
-  }
-}, { immediate: true });
 
 onBeforeUnmount(() => {
   stopDragLeft(); stopDragRight(); stopDragTop(); stopDragBottom();
@@ -570,4 +544,4 @@ body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
   position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;
 }
 .center-overlay-layer > * { pointer-events: auto; }
-</style> -->
+</style>
