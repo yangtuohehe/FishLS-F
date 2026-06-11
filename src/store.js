@@ -1,4 +1,3 @@
-// src/store.js
 import { reactive } from 'vue';
 
 export const globalStore = reactive({
@@ -6,8 +5,37 @@ export const globalStore = reactive({
   systemMenus: [
     { id: 'nav-overview', label: '监管总览', path: '/overview', icon: '📊' },
     { id: 'nav-monitor', label: '实时监测', path: '/monitor', icon: '📡' },
-    { id: 'nav-digital', label: '三维数字孪生', path: '/digital', icon: '🧊' }
+    { id: 'nav-digital', label: '三维数字孪生', path: '/digital', icon: '🧊' },
+    { id: 'nav-onemap', label: '一张图管理', path: '/onemap', icon: '🗺️' },
+    { id: 'nav-control', label: '虚实交互控制', path: '/control', icon: '🎛️' }
   ],
+  mapLayers: [
+    { id: 'layer_buoy', name: '水质监测浮标', visible: true },
+    { id: 'layer_valve', name: '智能执行水阀', visible: true },
+    { id: 'layer_camera', name: '视频监控矩阵', visible: true },
+    { id: 'layer_cage', name: '养殖网箱区域', visible: false },
+    { id: 'layer_terrain', name: '海底地形洋流', visible: false }
+  ],
+  // 新增：物联网环境模拟传感器流
+  runtimeSensors: {
+    dissolvedOxygen: 5.5,
+    waterTemp: 24.0,
+    ammoniaNitrogen: 0.05
+  },
+  // 新增：水阀孪生实体运行时状态
+  runtimeValve: {
+    deviceId: 'VALVE_001',
+    deviceName: '一号主干道进水阀',
+    controlMode: 'AUTO_RULE',
+    currentOpening: 20.0,
+    targetOpening: 20.0,
+    matchedRule: '系统默认低耗运行规则'
+  },
+  // 新增：手动构建的规则语言脚本源码
+  ruleScriptSource: `// 海洋牧场水阀空间调控脚本
+IF dissolvedOxygen < 4.5 AND waterTemp > 26.0 THEN targetOpening = 90
+IF ammoniaNitrogen > 0.15 THEN targetOpening = 100
+IF dissolvedOxygen >= 4.5 AND ammoniaNitrogen <= 0.15 THEN targetOpening = 20`,
   pageMenus: {
     '/overview': [
       {
@@ -42,6 +70,33 @@ export const globalStore = reactive({
           { id: 'm_cb1', label: '中下: 设备状态', visible: true, zone: 'center-bottom', type: 'pie', props: { title: '设备状态', chartData: [{name: '正常', value: 198}, {name: '离线', value: 32}, {name: '故障', value: 18}] } },
           { id: 'm_r1', label: '右侧: 实时告警', visible: true, zone: 'right', type: 'list', props: { title: '实时告警', actionText: '查看更多', listData: [{ tagText: '严重', statusType: 'danger', time: '10:28', title: '养殖区C-05', descPrefix: '溶解氧过低 3.2 mg/L' }] } },
           { id: 'm_r2', label: '右侧: 实时监控视频', visible: true, zone: 'right', type: 'video', props: { cameraName: '养殖区A-01号摄像头' } }
+        ]
+      }
+    ],
+    '/digital': [],
+    '/onemap': [
+      {
+        id: 'onemap_view', label: '一张图图层控制', open: true,
+        children: [
+          { id: 'map_t1', label: '顶部第一行: 资产总数', visible: true, zone: 'top1', type: 'card', props: { label: '海域资产总数', value: '542', unit: '项', description: '覆盖面积', statusText: '120 km²', statusType: 'info' } },
+          { id: 'map_t2', label: '顶部第二行: 预警区域', visible: true, zone: 'top2', type: 'card', props: { label: '当前预警区域', value: '3', unit: '个', description: '处理中', statusText: '1 个', statusType: 'danger' } },
+          { id: 'map_l1', label: '左侧: 空间资源分布', visible: true, zone: 'left', type: 'pie', props: { title: '空间资源分布', chartData: [{name: '养殖用海', value: 320}, {name: '生态红线', value: 150}, {name: '航道占用', value: 72}] } },
+          { id: 'map_l2', label: '左侧: 图层数据统计', visible: true, zone: 'left', type: 'bar', props: { title: '图层数据统计(个)', categories: ['监测点', '执行阀', '网箱区', '视频点'], values: [98, 45, 12, 24] } },
+          { id: 'map_l3', label: '左侧: 空间快捷查询', visible: true, zone: 'left', type: 'query', props: { title: '空间快捷查询', placeholders: '输入设备名称或编号', tags: ['全部', '站点', '水阀', '告警中'] } },
+          { id: 'map_r1', label: '右侧: 区域动态报表', visible: true, zone: 'right', type: 'list', props: { title: '区域动态报表', actionText: '刷新', listData: [{ tagText: '新增', statusType: 'primary', time: '14:20', title: '三号标段', descPrefix: '设施部署完毕' }] } },
+          { id: 'map_r2', label: '右侧: 预警类型分布', visible: true, zone: 'right', type: 'pie', props: { title: '预警类型分布', chartData: [{name: '水质超标', value: 5}, {name: '设备离线', value: 3}, {name: '电压过低', value: 2}] } },
+          { id: 'map_b1', label: '底部第一行: 流量监控', visible: true, zone: 'bottom1', type: 'line', props: { title: '海域航行器流量', xAxisData: ['周一', '周二', '周三'], seriesData: [{name: '商船', data: [45, 52, 48]}, {name: '渔船', data: [120, 135, 110]}] } }
+        ]
+      }
+    ],
+    '/control': [
+      {
+        id: 'ctrl_view', label: '虚实交互与调控面板', open: true,
+        children: [
+          { id: 'c_t1', label: '核心受控对象', visible: true, zone: 'top', type: 'card' },
+          { id: 'c_l1', label: '环境感知要素', visible: true, zone: 'left', type: 'env_sensor' },
+          { id: 'c_l2', label: '控制规则编译', visible: true, zone: 'left', type: 'rule_editor' },
+          { id: 'c_r1', label: '决策控制引擎', visible: true, zone: 'right', type: 'engine_monitor' }
         ]
       }
     ]
