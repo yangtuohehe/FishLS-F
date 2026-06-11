@@ -33,43 +33,44 @@ onUnmounted(() => {
   overflow: hidden;
   border-radius: 8px;
 }
-</style> -->
+</style>
+ -->
 
-<template>
+
+ <!-- <template>
   <div ref="localContainer" class="cesium-wrapper"></div>
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref, nextTick } from 'vue'; // 1. 引入 nextTick
+import { onMounted, onUnmounted, ref } from 'vue';
 import { getGlobalCesium } from '../../utils/cesiumManager.js';
 
 const localContainer = ref(null);
+let observer = null;
 
 onMounted(() => {
   const { viewer, cesiumContainer } = getGlobalCesium();
   
   if (localContainer.value && cesiumContainer) {
-    // 确保旧父节点已清理（防止意外嵌套）
     if (cesiumContainer.parentNode) {
       cesiumContainer.parentNode.removeChild(cesiumContainer);
     }
-    
     localContainer.value.appendChild(cesiumContainer);
     
-    // 2. 关键点：DOM 插入后，必须等待下一帧渲染，否则 resize() 会计算错误
-    nextTick(() => {
+    // 自动监听器：无论谁改变了容器大小，Cesium 都会自动刷新
+    observer = new ResizeObserver(() => {
       if (viewer) {
         viewer.resize();
-        viewer.scene.requestRender(); // 强制刷新渲染
+        viewer.scene.requestRender();
       }
     });
+    observer.observe(localContainer.value);
   }
 });
 
 onUnmounted(() => {
+  if (observer) observer.disconnect();
   const { cesiumContainer } = getGlobalCesium();
-  // 注意：不要直接彻底销毁 viewer，因为你用了单例模式
-  // 只是把容器从 DOM 树中移除即可
   if (cesiumContainer && cesiumContainer.parentNode === localContainer.value) {
     localContainer.value.removeChild(cesiumContainer);
   }
@@ -80,11 +81,39 @@ onUnmounted(() => {
 .cesium-wrapper {
   width: 100%;
   height: 100%;
-  margin: 0;
-  padding: 0;
+  position: relative;
   overflow: hidden;
-  border-radius: 8px;
-  /* 确保这个容器不会拦截鼠标事件，除非它是 Cesium 的宿主 */
+  /* 确保此容器不会阻止鼠标事件穿透给 Cesium */
   pointer-events: auto; 
+}
+</style> -->
+<template>
+  <div ref="hostRef" class="cesium-host"></div>
+</template>
+
+<script setup>
+import { onMounted, onUnmounted, ref } from 'vue';
+import { borrowCesium, returnCesium } from '../../utils/cesiumManager.js';
+
+const hostRef = ref(null);
+
+onMounted(() => {
+  // 页面加载时借用
+  if (hostRef.value) {
+    borrowCesium(hostRef.value);
+  }
+});
+
+onUnmounted(() => {
+  // 页面卸载时归还
+  returnCesium();
+});
+</script>
+
+<style scoped>
+.cesium-host {
+  width: 100%;
+  height: 100%;
+  pointer-events: auto; /* 关键：确保鼠标能点到地球 */
 }
 </style>

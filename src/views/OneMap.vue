@@ -188,7 +188,6 @@ const bottom2ZoneComps = computed(() => activeComponents.value.filter(c => c.zon
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   z-index: 50;
   overflow: hidden;
-  pointer-events: auto;
 }
 
 .hud-header {

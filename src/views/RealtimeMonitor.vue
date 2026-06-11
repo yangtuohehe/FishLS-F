@@ -12,25 +12,19 @@
         <GridItem
           v-for="item in layout"
           :key="item.i"
-          :x="item.x"
-          :y="item.y"
-          :w="item.w"
-          :h="item.h"
-          :i="item.i"
+          :x="item.x" :y="item.y" :w="item.w" :h="item.h" :i="item.i"
           drag-allow-from=".drag-handle"
           class="grid-item-wrapper"
+          :class="{ 'earth-grid-item': item.type === 'earth' }"
         >
           <div class="item-content">
             <div class="drag-handle">⠿ {{ item.title }}</div>
             
             <div class="body-content">
               <CesiumViewer v-if="item.type === 'earth'" />
-              
-              <DataCard v-if="item.type === 'card'" v-bind="item.props" />
-              
-              <DynamicList v-if="item.type === 'list'" v-bind="item.props" />
-              
-              <VideoPlayer v-if="item.type === 'video'" v-bind="item.props" />
+              <DataCard v-else-if="item.type === 'card'" v-bind="item.props" />
+              <DynamicList v-else-if="item.type === 'list'" v-bind="item.props" />
+              <VideoPlayer v-else-if="item.type === 'video'" v-bind="item.props" />
             </div>
           </div>
         </GridItem>
@@ -46,42 +40,56 @@
   import DynamicList from '../components/ui/DynamicList.vue';
   import VideoPlayer from '../components/ui/VideoPlayer.vue';
   
-  // 定义所有组件的布局和初始配置，页面独立，不依赖 store.js
   const layout = ref([
-    // 地球：占据中心大块
-    { i: 'earth', x: 6, y: 0, w: 12, h: 20, type: 'earth', title: '数字孪生地球' },
-    
-    // 气象卡片：顶部排列
-    { i: 'weather-1', x: 0, y: 0, w: 6, h: 4, type: 'card', title: '风速监控', props: { label: '实时风速', value: '12.4', unit: 'm/s', statusText: '正常' } },
-    { i: 'weather-2', x: 18, y: 0, w: 6, h: 4, type: 'card', title: '气温监控', props: { label: '表层气温', value: '26.5', unit: '℃', statusText: '正常' } },
-  
-    // 水质列表：左侧
-    { i: 'water-1', x: 0, y: 4, w: 6, h: 10, type: 'list', title: '水质传感监测', props: { title: '溶解氧实时列表', listData: [{title: 'A01浮标', descPrefix: 'DO:', descHighlight: '6.8mg/L'}] } },
-  
-    // 视频：右侧
-    { i: 'video-1', x: 18, y: 4, w: 6, h: 8, type: 'video', title: '实时监控', props: { cameraName: '南侧航道球机' } },
-    
-    // 设备状态：底部
-    { i: 'device-1', x: 6, y: 20, w: 12, h: 6, type: 'list', title: '设备在线状态', props: { title: '控制网关状态', listData: [{title: '边缘计算节点', statusType: 'success'}] } }
+    { i: 'earth', x: 6, y: 0, w: 12, h: 20, type: 'earth', title: '数字孪生底座' },
+    { i: 'weather-1', x: 0, y: 0, w: 6, h: 6, type: 'card', title: '实时风速', props: { label: '风速', value: '12.4', unit: 'm/s' } },
+    { i: 'weather-2', x: 18, y: 0, w: 6, h: 6, type: 'card', title: '实时气温', props: { label: '气温', value: '26.5', unit: '℃' } },
+    { i: 'water-1', x: 0, y: 6, w: 6, h: 10, type: 'list', title: '水质监测', props: { title: '溶解氧', listData: [{title: 'A01', descPrefix: 'DO:', descHighlight: '6.8'}] } },
+    { i: 'video-1', x: 18, y: 6, w: 6, h: 8, type: 'video', title: '监控', props: { cameraName: '主航道' } },
+    { i: 'device-1', x: 6, y: 20, w: 12, h: 6, type: 'list', title: '设备在线', props: { title: '网关状态', listData: [{title: '节点1', statusType: 'success'}] } }
   ]);
   </script>
   
   <style scoped>
   .monitor-grid-container {
-    width: 100vw;
-    height: 100vh;
-    background-color: #050505;
-    padding: 10px;
+    width: 100%;
+    height: calc(100vh - 60px); /* 减去顶部 header 高度 */
+    overflow: auto;
+    background: #050505;
   }
+  
   .grid-item-wrapper {
     background: #10151f;
     border: 1px solid #1b263b;
     border-radius: 8px;
     overflow: hidden;
   }
-  .item-content { display: flex; flex-direction: column; height: 100%; }
-  .drag-handle { 
-    padding: 6px 10px; background: #1b263b; color: #fff; font-size: 12px; cursor: grab; user-select: none;
+  
+  /* 只针对地球项放开交互 */
+  .grid-item-wrapper.earth-grid-item {
+    touch-action: auto !important;
+    pointer-events: auto !important;
+    z-index: 5;
   }
-  .body-content { flex: 1; min-height: 0; overflow: hidden; position: relative; }
+  
+  .item-content { 
+    display: flex; 
+    flex-direction: column; 
+    height: 100%; 
+  }
+  
+  .drag-handle { 
+    padding: 6px; 
+    background: #1b263b; 
+    color: #fff; 
+    font-size: 12px; 
+    cursor: grab;
+    z-index: 10;
+  }
+  
+  .body-content { 
+    flex: 1; 
+    min-height: 0; 
+    overflow: hidden;
+  }
   </style>
