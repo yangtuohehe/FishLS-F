@@ -1,154 +1,87 @@
 <template>
-  <div class="monitor-container">
-    <div class="main-zone-top" v-if="top1ZoneComps.length > 0">
-      <div class="comp-wrapper" v-for="comp in top1ZoneComps" :key="comp.id">
-        <DataCard v-if="comp.type === 'card'" v-bind="comp.props" />
-      </div>
-    </div>
-
-    <div class="main-zone-top" v-if="top2ZoneComps.length > 0">
-      <div class="comp-wrapper" v-for="comp in top2ZoneComps" :key="comp.id">
-        <DataCard v-if="comp.type === 'card'" v-bind="comp.props" />
-      </div>
-    </div>
-
-    <div class="main-zone-middle">
-      <div class="main-zone-left" v-if="leftZoneComps.length > 0">
-        <div class="comp-wrapper" v-for="comp in leftZoneComps" :key="comp.id">
-          <PieChart v-if="comp.type === 'pie'" v-bind="comp.props" />
-          <DynamicList v-if="comp.type === 'list'" v-bind="comp.props" />
-        </div>
-      </div>
-
-      <div class="main-zone-center">
-        <div class="cesium-earth-container">
-          <CesiumViewer />
-        </div>
-        <div class="center-bottom-area" v-if="centerBottomComps.length > 0">
-          <div class="comp-wrapper" v-for="comp in centerBottomComps" :key="comp.id">
-            <PieChart v-if="comp.type === 'pie'" v-bind="comp.props" />
+    <div class="monitor-grid-container">
+      <GridLayout
+        v-model:layout="layout"
+        :col-num="24"
+        :row-height="30"
+        :is-draggable="true"
+        :is-resizable="true"
+        :margin="[10, 10]"
+        :use-css-transforms="true"
+      >
+        <GridItem
+          v-for="item in layout"
+          :key="item.i"
+          :x="item.x"
+          :y="item.y"
+          :w="item.w"
+          :h="item.h"
+          :i="item.i"
+          drag-allow-from=".drag-handle"
+          class="grid-item-wrapper"
+        >
+          <div class="item-content">
+            <div class="drag-handle">⠿ {{ item.title }}</div>
+            
+            <div class="body-content">
+              <CesiumViewer v-if="item.type === 'earth'" />
+              
+              <DataCard v-if="item.type === 'card'" v-bind="item.props" />
+              
+              <DynamicList v-if="item.type === 'list'" v-bind="item.props" />
+              
+              <VideoPlayer v-if="item.type === 'video'" v-bind="item.props" />
+            </div>
           </div>
-        </div>
-      </div>
-
-      <div class="main-zone-right" v-if="rightZoneComps.length > 0">
-        <div class="comp-wrapper" v-for="comp in rightZoneComps" :key="comp.id">
-          <DynamicList v-if="comp.type === 'list'" v-bind="comp.props" />
-          <VideoPlayer v-if="comp.type === 'video'" v-bind="comp.props" />
-        </div>
-      </div>
+        </GridItem>
+      </GridLayout>
     </div>
-
-    <div class="main-zone-bottom" v-if="bottom1ZoneComps.length > 0">
-      <div class="comp-wrapper" v-for="comp in bottom1ZoneComps" :key="comp.id">
-        <PieChart v-if="comp.type === 'pie'" v-bind="comp.props" />
-      </div>
-    </div>
-
-    <div class="main-zone-bottom" v-if="bottom2ZoneComps.length > 0">
-      <div class="comp-wrapper" v-for="comp in bottom2ZoneComps" :key="comp.id">
-        <PieChart v-if="comp.type === 'pie'" v-bind="comp.props" />
-      </div>
-    </div>
-  </div>
-</template>
-
-<script setup>
-import { computed } from 'vue';
-import { globalStore } from '../store.js';
-import DataCard from '../components/ui/DataCard.vue';
-import PieChart from '../components/charts/PieChart.vue';
-import DynamicList from '../components/ui/DynamicList.vue';
-import CesiumViewer from '../components/ui/CesiumViewer.vue';
-import VideoPlayer from '../components/ui/VideoPlayer.vue';
-
-const activeComponents = computed(() => {
-  const comps = [];
-  const currentMenus = globalStore.pageMenus['/monitor'] || [];
-  currentMenus.forEach(group => {
-    group.children.forEach(child => {
-      if (child.visible) comps.push(child);
-    });
-  });
-  return comps;
-});
-
-const top1ZoneComps = computed(() => activeComponents.value.filter(c => c.zone === 'top1'));
-const top2ZoneComps = computed(() => activeComponents.value.filter(c => c.zone === 'top2'));
-const leftZoneComps = computed(() => activeComponents.value.filter(c => c.zone === 'left'));
-const centerBottomComps = computed(() => activeComponents.value.filter(c => c.zone === 'center-bottom'));
-const rightZoneComps = computed(() => activeComponents.value.filter(c => c.zone === 'right'));
-const bottom1ZoneComps = computed(() => activeComponents.value.filter(c => c.zone === 'bottom1'));
-const bottom2ZoneComps = computed(() => activeComponents.value.filter(c => c.zone === 'bottom2'));
-</script>
-
-<style scoped>
-.monitor-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 12px;
-  gap: 12px;
-  min-width: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-.main-zone-top {
-  display: flex;
-  gap: 12px;
-  flex-shrink: 0;
-  height: 100px;
-}
-.main-zone-middle {
-  display: flex;
-  flex: 1;
-  gap: 12px;
-  min-height: 400px;
-  min-width: 0;
-}
-.main-zone-left,
-.main-zone-right {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  width: 360px;
-  flex-shrink: 0;
-}
-.main-zone-center {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-width: 0;
-  min-height: 0;
-}
-.cesium-earth-container {
-  flex: 2;
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid #1b263b;
-}
-.center-bottom-area {
-  flex: 1;
-  display: flex;
-  gap: 12px;
-  min-height: 0;
-}
-.main-zone-bottom {
-  display: flex;
-  gap: 12px;
-  flex-shrink: 0;
-  height: 280px;
-}
-.comp-wrapper {
-  flex: 1;
-  min-width: 0;
-  min-height: 0;
-  background-color: #ffffff;
-  border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-</style>
+  </template>
+  
+  <script setup>
+  import { ref } from 'vue';
+  import { GridLayout, GridItem } from 'grid-layout-plus';
+  import CesiumViewer from '../components/ui/CesiumViewer.vue';
+  import DataCard from '../components/ui/DataCard.vue';
+  import DynamicList from '../components/ui/DynamicList.vue';
+  import VideoPlayer from '../components/ui/VideoPlayer.vue';
+  
+  // 定义所有组件的布局和初始配置，页面独立，不依赖 store.js
+  const layout = ref([
+    // 地球：占据中心大块
+    { i: 'earth', x: 6, y: 0, w: 12, h: 20, type: 'earth', title: '数字孪生地球' },
+    
+    // 气象卡片：顶部排列
+    { i: 'weather-1', x: 0, y: 0, w: 6, h: 4, type: 'card', title: '风速监控', props: { label: '实时风速', value: '12.4', unit: 'm/s', statusText: '正常' } },
+    { i: 'weather-2', x: 18, y: 0, w: 6, h: 4, type: 'card', title: '气温监控', props: { label: '表层气温', value: '26.5', unit: '℃', statusText: '正常' } },
+  
+    // 水质列表：左侧
+    { i: 'water-1', x: 0, y: 4, w: 6, h: 10, type: 'list', title: '水质传感监测', props: { title: '溶解氧实时列表', listData: [{title: 'A01浮标', descPrefix: 'DO:', descHighlight: '6.8mg/L'}] } },
+  
+    // 视频：右侧
+    { i: 'video-1', x: 18, y: 4, w: 6, h: 8, type: 'video', title: '实时监控', props: { cameraName: '南侧航道球机' } },
+    
+    // 设备状态：底部
+    { i: 'device-1', x: 6, y: 20, w: 12, h: 6, type: 'list', title: '设备在线状态', props: { title: '控制网关状态', listData: [{title: '边缘计算节点', statusType: 'success'}] } }
+  ]);
+  </script>
+  
+  <style scoped>
+  .monitor-grid-container {
+    width: 100vw;
+    height: 100vh;
+    background-color: #050505;
+    padding: 10px;
+  }
+  .grid-item-wrapper {
+    background: #10151f;
+    border: 1px solid #1b263b;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .item-content { display: flex; flex-direction: column; height: 100%; }
+  .drag-handle { 
+    padding: 6px 10px; background: #1b263b; color: #fff; font-size: 12px; cursor: grab; user-select: none;
+  }
+  .body-content { flex: 1; min-height: 0; overflow: hidden; position: relative; }
+  </style>
