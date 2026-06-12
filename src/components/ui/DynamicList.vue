@@ -129,7 +129,9 @@
   }
   
   .item-title.fixed-width {
-    width: 80px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 120px;
     flex-shrink: 0;
   }
   

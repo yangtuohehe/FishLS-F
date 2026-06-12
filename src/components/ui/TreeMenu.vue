@@ -87,10 +87,10 @@ const toggleChildVisibility = (group, child) => {
   width: 100%;
   height: 100%;
   padding: 12px;
-  background-color: #0a141f;
+  background-color: #ffffff;
   overflow-y: auto;
   overflow-x: hidden;
-  color: #ffffff;
+  color: #303133;
   box-sizing: border-box;
 }
 
@@ -101,24 +101,24 @@ const toggleChildVisibility = (group, child) => {
 .level-1-node {
   cursor: pointer;
   padding: 12px;
-  background-color: #1b263b;
+  background-color: #ffffff;
   border-radius: 6px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   transition: all 0.2s;
-  border: 1px solid #1b263b;
+  border: 1px solid #ebeef5;
 }
 
 .level-1-node:hover {
-  background-color: rgba(0, 180, 216, 0.1);
-  border-color: #00b4d8;
+  background-color: #f5f7fa;
+  border-color: #dcdfe6;
 }
 
 .level-1-node.is-active {
-  background-color: rgba(0, 180, 216, 0.2);
-  border-color: #00b4d8;
-  box-shadow: 0 0 8px rgba(0, 180, 216, 0.2);
+  background-color: #ecf5ff;
+  border-color: #c6e2ff;
+  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.15);
 }
 
 .node-left {
@@ -144,7 +144,7 @@ const toggleChildVisibility = (group, child) => {
 
 .expand-icon {
   font-size: 10px;
-  color: #00b4d8;
+  color: #409eff;
 }
 
 .level-1-children {
@@ -156,10 +156,11 @@ const toggleChildVisibility = (group, child) => {
 }
 
 .zone-menu-group {
-  border: 1px solid #1b263b;
-  border-radius: 4px;
-  background-color: rgba(27, 38, 59, 0.3);
+  border: 1px solid #ebeef5;
+  border-radius: 6px;
+  background-color: #ffffff;
   overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 
 .level-2-node {
@@ -167,12 +168,13 @@ const toggleChildVisibility = (group, child) => {
   align-items: center;
   justify-content: space-between;
   padding: 8px 10px;
-  background-color: #1b263b;
+  background-color: #f5f7fa;
+  border-bottom: 1px solid #ebeef5;
 }
 
 .toggle-icon {
   font-size: 10px;
-  color: #8892b0;
+  color: #909399;
   width: 12px;
 }
 
@@ -180,7 +182,7 @@ const toggleChildVisibility = (group, child) => {
   display: flex;
   flex-direction: column;
   padding: 4px 0;
-  background-color: rgba(13, 27, 42, 0.5);
+  background-color: #ffffff;
 }
 
 .level-3-node {
@@ -192,12 +194,12 @@ const toggleChildVisibility = (group, child) => {
 }
 
 .level-3-node:hover {
-  background-color: rgba(0, 180, 216, 0.1);
+  background-color: #f0f2f5;
 }
 
 .child-label {
   font-size: 13px;
-  color: #e0e1dd;
+  color: #606266;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -207,7 +209,7 @@ const toggleChildVisibility = (group, child) => {
 .visibility-toggle-btn {
   width: 18px;
   height: 18px;
-  border: 1px solid #415a77;
+  border: 1px solid #dcdfe6;
   background-color: transparent;
   color: transparent;
   border-radius: 4px;
@@ -221,13 +223,13 @@ const toggleChildVisibility = (group, child) => {
 }
 
 .visibility-toggle-btn:hover {
-  border-color: #00b4d8;
-  color: rgba(0, 180, 216, 0.5);
+  border-color: #409eff;
+  color: rgba(64, 158, 255, 0.5);
 }
 
 .visibility-toggle-btn.is-active {
-  background-color: #00b4d8;
-  border-color: #00b4d8;
+  background-color: #409eff;
+  border-color: #409eff;
   color: #ffffff;
 }
 </style>

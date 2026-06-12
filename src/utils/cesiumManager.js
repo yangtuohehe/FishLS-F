@@ -149,7 +149,8 @@ export function returnCesium(targetElement) {
     });
   } else {
     if (cesiumContainer && cesiumContainer.parentNode) {
-      document.body.appendChild(cesiumContainer);
+      // document.body.appendChild(cesiumContainer);
+      cesiumContainer.remove();
     }
   }
 }

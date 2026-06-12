@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
     <div class="monitor-grid-container">
       <GridLayout
         v-model:layout="layout"
@@ -93,5 +93,136 @@
     flex: 1; 
     min-height: 0; 
     overflow: hidden;
+  }
+  </style> -->
+  <template>
+    <div class="monitor-grid-container">
+      <GridLayout
+        v-model:layout="layout"
+        :col-num="24"
+        :row-height="30"
+        :is-draggable="true"
+        :is-resizable="true"
+        :margin="[10, 10]"
+        :use-css-transforms="true"
+      >
+        <GridItem
+          v-for="item in layout"
+          :key="item.i"
+          :x="item.x" :y="item.y" :w="item.w" :h="item.h" :i="item.i"
+          drag-allow-from=".drag-handle"
+          class="grid-item-wrapper"
+          :class="{ 'earth-grid-item': item.type === 'earth' }"
+        >
+          <div class="item-content">
+            <div class="drag-handle">⠿ {{ item.label || item.title }}</div>
+            
+            <div class="body-content">
+              <CesiumViewer v-if="item.type === 'earth'" />
+              <DataCard v-else-if="item.type === 'card'" v-bind="item.props" />
+              <DynamicList v-else-if="item.type === 'list'" v-bind="item.props" />
+              <VideoPlayer v-else-if="item.type === 'video'" v-bind="item.props" />
+            </div>
+          </div>
+        </GridItem>
+      </GridLayout>
+    </div>
+  </template>
+  
+  <script setup>
+  import { ref, watch } from 'vue';
+  import { GridLayout, GridItem } from 'grid-layout-plus';
+  import CesiumViewer from '../components/ui/CesiumViewer.vue';
+  import DataCard from '../components/ui/DataCard.vue';
+  import DynamicList from '../components/ui/DynamicList.vue';
+  import VideoPlayer from '../components/ui/VideoPlayer.vue';
+  import { globalStore } from '../store.js';
+  
+  const layout = ref([]);
+  
+  watch(
+    () => {
+      const menus = globalStore.pageMenus['/monitor'];
+      if (!menus) return '';
+      return menus.map(group => {
+        const groupVisible = group.visible ? 'T' : 'F';
+        const childrenVisible = group.children ? group.children.map(child => child.visible ? 'T' : 'F').join('') : '';
+        return groupVisible + childrenVisible;
+      }).join('-');
+    },
+    () => {
+      const flatLayout = [];
+      const menus = globalStore.pageMenus['/monitor'];
+      if (menus) {
+        menus.forEach(group => {
+          if (group.visible && group.children) {
+            group.children.forEach(child => {
+              if (child.visible) {
+                flatLayout.push(child);
+              }
+            });
+          }
+        });
+      }
+      layout.value = flatLayout;
+    },
+    { immediate: true }
+  );
+  </script>
+  
+  <style scoped>
+  .monitor-grid-container {
+    width: 100%;
+    height: calc(100vh - 55px);
+    overflow: auto;
+    background: #f0f2f5;
+  }
+  
+  .grid-item-wrapper {
+    background: #ffffff;
+    border: 1px solid #ebeef5;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    color: #303133;
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .grid-item-wrapper:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  }
+  
+  .grid-item-wrapper.earth-grid-item {
+    touch-action: auto !important;
+    pointer-events: auto !important;
+    z-index: 5;
+  }
+  
+  .item-content { 
+    display: flex; 
+    flex-direction: column; 
+    height: 100%; 
+  }
+  
+  .drag-handle { 
+    padding: 8px 12px; 
+    background: #f5f7fa; 
+    color: #606266; 
+    font-size: 13px; 
+    font-weight: 500;
+    cursor: grab;
+    z-index: 10;
+    border-bottom: 1px solid #ebeef5;
+  }
+  
+  .drag-handle:active {
+    cursor: grabbing;
+  }
+  
+  .body-content { 
+    flex: 1; 
+    min-height: 0; 
+    overflow: auto;
+    padding: 4px;
   }
   </style>
