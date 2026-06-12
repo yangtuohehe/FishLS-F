@@ -315,10 +315,7 @@ body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;
           <div class="resizer-v" @mousedown="startDragLeft" v-show="hasLeft"></div>
 
           <div class="workspace-center">
-            <CesiumViewer />
-            <div class="center-overlay-layer">
-              <router-view></router-view>
-            </div>
+            <router-view></router-view>
           </div>
 
           <div class="resizer-v" @mousedown="startDragRight" v-show="hasRight"></div>
@@ -343,7 +340,6 @@ import { computed, ref, onBeforeUnmount } from 'vue';
 import { useRoute } from 'vue-router';
 import { globalStore } from './store.js';
 import TreeMenu from './components/ui/TreeMenu.vue';
-import CesiumViewer from './components/ui/CesiumViewer.vue';
 
 const route = useRoute();
 
