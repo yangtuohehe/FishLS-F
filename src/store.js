@@ -1,5 +1,3 @@
-
-
 import { reactive } from 'vue';
 
 export const globalStore = reactive({
@@ -10,7 +8,8 @@ export const globalStore = reactive({
     { id: 'nav-monitor', label: '实时监测', path: '/monitor', icon: '📡' },
     { id: 'nav-digital', label: '三维数字孪生', path: '/digital', icon: '🧊' },
     { id: 'nav-onemap', label: '一张图管理', path: '/onemap', icon: '🗺️' },
-    { id: 'nav-control', label: '虚实交互控制', path: '/control', icon: '🎛️' }
+    { id: 'nav-control', label: '虚实交互控制', path: '/control', icon: '🎛️' },
+    { id: 'nav-spatial', label: '时空数据管理', path: '/spatial', icon: '🌍' }
   ],
   mapLayers: [
     { id: 'layer_boundary', name: '海域边界红线', visible: true, isBusiness: false },
@@ -23,33 +22,33 @@ export const globalStore = reactive({
       {
         id: 'menu-operation', label: '牧场运行情况', open: true, visible: true,
         children: [
-          { id: 't1', label: '海洋牧场概况', visible: true, zone: 'top1', type: 'card', props: { label: '总覆盖海域', value: '120', unit: 'km²', description: '较上季度', statusText: '持平', statusType: 'info' } },
-          { id: 't2', label: '水质综合状态', visible: true, zone: 'top1', type: 'card', props: { label: '水质达标率', value: '98.5', unit: '%', description: '整体评估', statusText: '优良', statusType: 'up' } },
-          { id: 't3', label: '牧场设备情况', visible: true, zone: 'top1', type: 'card', props: { label: '资产设备总数', value: '456', unit: '台', description: '新增部署', statusText: '↑ 12', statusType: 'up' } },
-          { id: 't4', label: '预警信息提示', visible: true, zone: 'top2', type: 'card', props: { label: '当前活跃预警', value: '5', unit: '条', description: '高风险级别', statusText: '2 条', statusType: 'danger' } },
-          { id: 't5', label: '养殖区分布', visible: true, zone: 'top2', type: 'card', props: { label: '规划养殖区', value: '18', unit: '个', description: '投产状态', statusText: '全部投产', statusType: 'up' } }
+          { id: 't1', label: '海洋牧场概况', visible: true, x: 0, y: 0, w: 4, h: 4, type: 'card', props: { label: '总覆盖海域', value: '120', unit: 'km²', description: '较上季度', statusText: '持平', statusType: 'info' } },
+          { id: 't2', label: '水质综合状态', visible: true, x: 4, y: 0, w: 5, h: 4, type: 'card', props: { label: '水质达标率', value: '98.5', unit: '%', description: '整体评估', statusText: '优良', statusType: 'up' } },
+          { id: 't3', label: '牧场设备情况', visible: true, x: 9, y: 0, w: 6, h: 4, type: 'card', props: { label: '资产设备总数', value: '456', unit: '台', description: '新增部署', statusText: '↑ 12', statusType: 'up' } },
+          { id: 't4', label: '预警信息提示', visible: true, x: 15, y: 0, w: 5, h: 4, type: 'card', props: { label: '当前活跃预警', value: '5', unit: '条', description: '高风险级别', statusText: '2 条', statusType: 'danger' } },
+          { id: 't5', label: '养殖区分布', visible: true, x: 20, y: 0, w: 4, h: 4, type: 'card', props: { label: '规划养殖区', value: '18', unit: '个', description: '投产状态', statusText: '全部投产', statusType: 'up' } }
         ]
       },
       {
         id: 'menu-indicators', label: '核心指标面板', open: true, visible: true,
         children: [
-          { id: 'l1', label: '设备在线状态', visible: true, zone: 'left', type: 'card', props: { label: '设备在线率', value: '94.2', unit: '%', description: '离线设备', statusText: '26 台', statusType: 'down' } },
-          { id: 'l2', label: '溶解氧分布', visible: true, zone: 'left', type: 'pie', props: { title: '溶解氧浓度区间', chartData: [{name: '丰富(>6)', value: 45}, {name: '正常(4-6)', value: 30}, {name: '偏低(<4)', value: 5}] } },
-          { id: 'l3', label: '温湿度实时曲线', visible: true, zone: 'left', type: 'line', props: { title: '表层温湿度波动', xAxisData: ['08:00', '10:00', '12:00', '14:00'], seriesData: [{name: '水温(℃)', data: [22.1, 23.5, 24.2, 23.8]}, {name: '湿度(%)', data: [75, 72, 68, 70]}] } }
+          { id: 'l1', label: '设备在线状态', visible: true, x: 0, y: 4, w: 6, h: 4, type: 'card', props: { label: '设备在线率', value: '94.2', unit: '%', description: '离线设备', statusText: '26 台', statusType: 'down' } },
+          { id: 'l2', label: '溶解氧分布', visible: true, x: 0, y: 8, w: 6, h: 8, type: 'pie', props: { title: '溶解氧浓度区间', chartData: [{name: '丰富(>6)', value: 45}, {name: '正常(4-6)', value: 30}, {name: '偏低(<4)', value: 5}] } },
+          { id: 'l3', label: '温湿度实时曲线', visible: true, x: 0, y: 16, w: 6, h: 8, type: 'line', props: { title: '表层温湿度波动', xAxisData: ['08:00', '10:00', '12:00', '14:00'], seriesData: [{name: '水温(℃)', data: [22.1, 23.5, 24.2, 23.8]}, {name: '湿度(%)', data: [75, 72, 68, 70]}] } }
         ]
       },
       {
         id: 'menu-alerts', label: '预警信息', open: true, visible: true,
         children: [
-          { id: 'r1', label: '实时预警队列', visible: true, zone: 'right', type: 'list', props: { title: '实时预警追踪', actionText: '处置', listData: [{ tagText: '低氧预警', statusType: 'danger', time: '14:20', title: '三号养殖区', descPrefix: '指标异常', descHighlight: '3.2 mg/L' }, { tagText: '设备异常', statusType: 'warning', time: '13:15', title: '主干通信网关', descPrefix: '通信异常', descHighlight: '延迟过高' }] } },
-          { id: 'r2', label: '预警维度统计', visible: true, zone: 'right', type: 'pie', props: { title: '本月风险类型统计', chartData: [{name: '环境指标越界', value: 56}, {name: '设备硬件故障', value: 23}, {name: '通信链路异常', value: 12}, {name: '人为活动入侵', value: 9}] } }
+          { id: 'r1', label: '实时预警队列', visible: true, x: 18, y: 4, w: 6, h: 10, type: 'list', props: { title: '实时预警追踪', actionText: '处置', listData: [{ tagText: '低氧预警', statusType: 'danger', time: '14:20', title: '三号养殖区', descPrefix: '指标异常', descHighlight: '3.2 mg/L' }, { tagText: '设备异常', statusType: 'warning', time: '13:15', title: '主干通信网关', descPrefix: '通信异常', descHighlight: '延迟过高' }] } },
+          { id: 'r2', label: '预警维度统计', visible: true, x: 18, y: 14, w: 6, h: 10, type: 'pie', props: { title: '本月风险类型统计', chartData: [{name: '环境指标越界', value: 56}, {name: '设备硬件故障', value: 23}, {name: '通信链路异常', value: 12}, {name: '人为活动入侵', value: 9}] } }
         ]
       },
       {
         id: 'menu-trends', label: '指标趋势预测', open: true, visible: true,
         children: [
-          { id: 'b1', label: '指标变化趋势', visible: true, zone: 'bottom1', type: 'line', props: { title: '核心水质指标多维时序曲线', xAxisData: ['周一', '周二', '周三', '周四', '周五'], seriesData: [{name: '区域A溶解氧', data: [5.5, 6.2, 5.8, 6.5, 6.1]}, {name: '区域B溶解氧', data: [4.8, 5.1, 4.9, 5.3, 5.0]}] } },
-          { id: 'b2', label: '风险预测估计', visible: true, zone: 'bottom2', type: 'line', props: { title: '全域风险指数回归预测', xAxisData: ['未来1天', '未来2天', '未来3天', '未来4天', '未来5天'], seriesData: [{name: '自然环境风险', data: [0.12, 0.15, 0.22, 0.18, 0.14]}, {name: '设备损耗风险', data: [0.05, 0.06, 0.06, 0.07, 0.08]}] } }
+          { id: 'b1', label: '指标变化趋势', visible: true, x: 6, y: 18, w: 6, h: 6, type: 'line', props: { title: '核心水质指标多维时序曲线', xAxisData: ['周一', '周二', '周三', '周四', '周五'], seriesData: [{name: '区域A溶解氧', data: [5.5, 6.2, 5.8, 6.5, 6.1]}, {name: '区域B溶解氧', data: [4.8, 5.1, 4.9, 5.3, 5.0]}] } },
+          { id: 'b2', label: '风险预测估计', visible: true, x: 12, y: 18, w: 6, h: 6, type: 'line', props: { title: '全域风险指数回归预测', xAxisData: ['未来1天', '未来2天', '未来3天', '未来4天', '未来5天'], seriesData: [{name: '自然环境风险', data: [0.12, 0.15, 0.22, 0.18, 0.14]}, {name: '设备损耗风险', data: [0.05, 0.06, 0.06, 0.07, 0.08]}] } }
         ]
       }
     ],
@@ -84,26 +83,105 @@ export const globalStore = reactive({
         ]
       }
     ],
-    '/digital': [],
+    '/digital': [
+      {
+        id: 'digital-core', label: '核心空间视图', open: true, visible: true,
+        children: [
+          { id: 'earth', label: '三维数字孪生底座', visible: true, x: 5, y: 0, w: 14, h: 16, type: 'earth' }
+        ]
+      },
+      {
+        id: 'digital-modeling', label: '单体设备建模', open: true, visible: true,
+        children: [
+          { id: 'dt-m1', label: '网箱建模', visible: true, x: 0, y: 0, w: 5, h: 3, type: 'action-card', props: { icon: '📦', name: '深水网箱主体', btnText: '建模' } },
+          { id: 'dt-m2', label: '浮标建模', visible: true, x: 0, y: 3, w: 5, h: 3, type: 'action-card', props: { icon: '🛟', name: '水质监测浮标', btnText: '建模' } },
+          { id: 'dt-m3', label: '传感器建模', visible: true, x: 0, y: 6, w: 5, h: 3, type: 'action-card', props: { icon: '🌡️', name: '多参数传感器', btnText: '建模' } },
+          { id: 'dt-m4', label: '投喂机建模', visible: true, x: 0, y: 9, w: 5, h: 3, type: 'action-card', props: { icon: '⚙️', name: '智能投喂机', btnText: '建模' } },
+          { id: 'dt-m5', label: '机器人建模', visible: true, x: 0, y: 12, w: 5, h: 3, type: 'action-card', props: { icon: '🤖', name: '水下巡检机器人', btnText: '建模' } }
+        ]
+      },
+      {
+        id: 'digital-field', label: '场剖分分析', open: true, visible: true,
+        children: [
+          // 使用和 OneMap 图层控制一模一样的结构
+          { id: 'dt-f1', label: '物理场显隐控制', visible: true, x: 19, y: 0, w: 5, h: 7, type: 'field-control', props: { 
+              fields: [
+                { id: 'f_flow', name: '综合流场', visible: false },
+                { id: 'f_temp', name: '温盐场', visible: false },
+                { id: 'f_current', name: '洋流海流', visible: false }
+              ] 
+            } 
+          },
+          { id: 'dt-f2', label: '剖切控制台', visible: true, x: 19, y: 7, w: 5, h: 9, type: 'sliders', props: { 
+              title: '六自由度空间剖切', 
+              sliders: [
+                { label: 'X轴平移', min: -100, max: 100, value: 0 },
+                { label: 'Y轴平移', min: -100, max: 100, value: 0 },
+                { label: 'Z轴平移', min: -100, max: 0, value: -10 },
+                { label: '俯仰角', min: -90, max: 90, value: 0 },
+                { label: '偏航角', min: -180, max: 180, value: 0 },
+                { label: '翻滚角', min: -180, max: 180, value: 0 }
+              ] 
+            } 
+          }
+        ]
+      }
+    ],
     '/control': [],
+    '/spatial': [
+      {
+        id: 'spatial-top', label: '数据概览指标', open: true, visible: true,
+        children: [
+          { id: 'sp-t1', label: '数据总量', visible: true, x: 0, y: 0, w: 5, h: 3, type: 'card', props: { label: '空间与业务数据总计', value: '28,560', unit: '条', description: '较上月', statusText: '↑ 12.6%', statusType: 'up' } },
+          { id: 'sp-t2', label: '空间数据', visible: true, x: 5, y: 0, w: 5, h: 3, type: 'card', props: { label: '矢量与栅格数据', value: '15,230', unit: '条', description: '较上月', statusText: '↑ 10.3%', statusType: 'up' } },
+          { id: 'sp-t3', label: '时序数据', visible: true, x: 10, y: 0, w: 4, h: 3, type: 'card', props: { label: '传感器物联网数据', value: '8,650', unit: '条', description: '较上月', statusText: '↑ 15.7%', statusType: 'up' } },
+          { id: 'sp-t4', label: '数据服务', visible: true, x: 14, y: 0, w: 5, h: 3, type: 'card', props: { label: '已发布对外接口', value: '186', unit: '个', description: '较上月', statusText: '↑ 8.1%', statusType: 'up' } },
+          { id: 'sp-t5', label: '使用量', visible: true, x: 19, y: 0, w: 5, h: 3, type: 'card', props: { label: 'API月度调用总计', value: '56,892', unit: '次', description: '较上月', statusText: '↑ 13.4%', statusType: 'up' } }
+        ]
+      },
+      {
+        id: 'spatial-middle', label: '核心数据管理', open: true, visible: true,
+        children: [
+          { id: 'sp-m1', label: '数据资源目录树', visible: true, x: 0, y: 3, w: 4, h: 14, type: 'tree-catalog' },
+          { id: 'sp-m2', label: '本地数据与在线数据库台账', visible: true, x: 4, y: 3, w: 14, h: 14, type: 'data-table' },
+          { id: 'sp-m3', label: '数据详情与空间预览', visible: true, x: 18, y: 3, w: 6, h: 14, type: 'data-details' }
+        ]
+      },
+      {
+        id: 'spatial-bottom', label: '统计与服务', open: true, visible: true,
+        children: [
+          { id: 'sp-b1', label: '数据服务能力集成接口', visible: true, x: 0, y: 17, w: 8, h: 9, type: 'service-cards' },
+          { id: 'sp-b2', label: '数据使用统计分析', visible: true, x: 8, y: 17, w: 10, h: 9, type: 'line', props: { title: '数据使用时序统计(近7天)', xAxisData: ['05-26', '05-27', '05-28', '05-29', '05-30', '05-31', '06-01'], seriesData: [{name: '接口访问量', data: [5000, 7000, 6500, 8000, 7500, 9000, 8500]}, {name: '资源下载量', data: [2000, 3000, 2500, 3500, 3000, 4000, 3800]}] } },
+          { id: 'sp-b3', label: '资源入库类型分布', visible: true, x: 18, y: 17, w: 6, h: 9, type: 'pie', props: { title: '数据库台账类型占比', chartData: [{name: '矢量数据', value: 6523}, {name: '栅格数据', value: 4860}, {name: '时序数据', value: 8650}, {name: '影像数据', value: 5230}, {name: '业务数据', value: 3297}] } }
+        ]
+      }
+    ],
     '/onemap': [
+      // 新增：将图层控制和地球注册到二级菜单数据源中
+      {
+        id: 'onemap-core', label: '核心空间视图', open: true, visible: true,
+        children: [
+          { id: 'layer-control', label: '图层与空间控制', visible: true, x: 0, y: 0, w: 5, h: 12, type: 'layer-control' },
+          { id: 'earth', label: '三维数字孪生视图', visible: true, x: 5, y: 0, w: 14, h: 16, type: 'earth' }
+        ]
+      },
       {
         id: 'onemap-top', label: '养殖区管理', open: true, visible: true,
         children: [
-          { id: 'om-t1', label: '养殖区名称', visible: true, zone: 'top1', type: 'card', props: { label: '当前核心监测海域', value: '大陈岛一号区', unit: '', description: '空间编码', statusText: 'DC-01', statusType: 'info' } },
-          { id: 'om-t2', label: '海域面积', visible: true, zone: 'top1', type: 'card', props: { label: '规范确权海域面积', value: '84.5', unit: '公顷', description: '界址点位置', statusText: '已锁定', statusType: 'up' } },
-          { id: 'om-t3', label: '集约类型', visible: true, zone: 'top1', type: 'card', props: { label: '集约化养殖类型', value: '钢质重力式网箱', unit: '', description: '抗风浪等级', statusText: '12级强台风', statusType: 'up' } },
-          { id: 'om-t4', label: '产权权属', visible: true, zone: 'top2', type: 'card', props: { label: '海域所有权属人', value: '现代牧场股份', unit: '', description: '不动产证号', statusText: '浙海证第002号', statusType: 'info' } },
-          { id: 'om-t5', label: '养殖信息', visible: true, zone: 'top2', type: 'card', props: { label: '当前在养主要生物', value: '高体鰤/拟穴青蟹', unit: '', description: '投苗总存栏量', statusText: '85万尾', statusType: 'up' } }
+          { id: 'om-t1', label: '养殖区名称', visible: true, x: 0, y: 12, w: 5, h: 4, type: 'card', props: { label: '当前核心监测海域', value: '大陈岛一号区', unit: '', description: '空间编码', statusText: 'DC-01', statusType: 'info' } },
+          { id: 'om-t2', label: '海域面积', visible: true, x: 0, y: 16, w: 5, h: 4, type: 'card', props: { label: '规范确权海域面积', value: '84.5', unit: '公顷', description: '界址点位置', statusText: '已锁定', statusType: 'up' } },
+          { id: 'om-t3', label: '集约类型', visible: true, x: 0, y: 20, w: 5, h: 4, type: 'card', props: { label: '集约化养殖类型', value: '钢质重力式网箱', unit: '', description: '抗风浪等级', statusText: '12级强台风', statusType: 'up' } },
+          { id: 'om-t4', label: '产权权属', visible: true, x: 19, y: 0, w: 5, h: 4, type: 'card', props: { label: '海域所有权属人', value: '现代牧场股份', unit: '', description: '不动产证号', statusText: '浙海证第002号', statusType: 'info' } },
+          { id: 'om-t5', label: '养殖信息', visible: true, x: 19, y: 4, w: 5, h: 4, type: 'card', props: { label: '当前在养主要生物', value: '高体鰤/拟穴青蟹', unit: '', description: '投苗总存栏量', statusText: '85万尾', statusType: 'up' } }
         ]
       },
       {
         id: 'onemap-bottom', label: '监测点与设备管理', open: true, visible: true,
         children: [
-          { id: 'om-b1', label: '综合运行状态', visible: true, zone: 'bottom1', type: 'card', props: { label: '感知网络终端在线率', value: '97.4', unit: '%', description: '数据报文丢包率', statusText: '0.02%', statusType: 'up' } },
-          { id: 'om-b2', label: '工作船只定位监控', visible: true, zone: 'bottom1', type: 'video', props: { cameraName: '智能自动投喂无人船甲板机位' } },
-          { id: 'om-b3', label: '多传感器时序曲线', visible: true, zone: 'bottom2', type: 'line', props: { title: '物联网传感器24小时环境监控', xAxisData: ['04:00', '08:00', '12:00', '16:00'], seriesData: [{name: '溶解氧(mg/L)', data: [6.8, 6.2, 5.9, 6.4]}, {name: '盐度(‰)', data: [31.2, 31.1, 31.4, 31.3]}] } },
-          { id: 'om-b4', label: '自动调控生产终端', visible: true, zone: 'bottom2', type: 'list', props: { title: '自主运行调控设备清单', actionText: '指令统发', listData: [{ tagText: '变频增氧', statusType: 'success', time: '高能效', title: '深层叶轮增氧机组', descPrefix: '瞬时功率', descHighlight: '5.5kW' }, { tagText: '精密投喂', statusType: 'warning', time: '抛撒中', title: '中央气动下料系统', descPrefix: '下料频率', descHighlight: '20kg/min' }] } }
+          { id: 'om-b1', label: '综合运行状态', visible: true, x: 19, y: 8, w: 5, h: 4, type: 'card', props: { label: '感知网络终端在线率', value: '97.4', unit: '%', description: '数据报文丢包率', statusText: '0.02%', statusType: 'up' } },
+          { id: 'om-b2', label: '工作船只定位监控', visible: true, x: 19, y: 12, w: 5, h: 12, type: 'video', props: { cameraName: '智能自动投喂无人船甲板机位' } },
+          { id: 'om-b3', label: '多传感器时序曲线', visible: true, x: 5, y: 16, w: 7, h: 8, type: 'line', props: { title: '物联网传感器24小时环境监控', xAxisData: ['04:00', '08:00', '12:00', '16:00'], seriesData: [{name: '溶解氧(mg/L)', data: [6.8, 6.2, 5.9, 6.4]}, {name: '盐度(‰)', data: [31.2, 31.1, 31.4, 31.3]}] } },
+          { id: 'om-b4', label: '自动调控生产终端', visible: true, x: 12, y: 16, w: 7, h: 8, type: 'list', props: { title: '自主运行调控设备清单', actionText: '指令统发', listData: [{ tagText: '变频增氧', statusType: 'success', time: '高能效', title: '深层叶轮增氧机组', descPrefix: '瞬时功率', descHighlight: '5.5kW' }, { tagText: '精密投喂', statusType: 'warning', time: '抛撒中', title: '中央气动下料系统', descPrefix: '下料频率', descHighlight: '20kg/min' }] } }
         ]
       }
     ]
