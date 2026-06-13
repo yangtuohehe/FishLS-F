@@ -9,7 +9,8 @@ export const globalStore = reactive({
     { id: 'nav-digital', label: '三维数字孪生', path: '/digital', icon: '🧊' },
     { id: 'nav-onemap', label: '一张图管理', path: '/onemap', icon: '🗺️' },
     { id: 'nav-control', label: '虚实交互控制', path: '/control', icon: '🎛️' },
-    { id: 'nav-spatial', label: '时空数据管理', path: '/spatial', icon: '🌍' }
+    { id: 'nav-spatial', label: '时空数据管理', path: '/spatial', icon: '🌍' },
+    { id: 'nav-report', label: '报表汇总', path: '/report', icon: '📑' }
   ],
   mapLayers: [
     { id: 'layer_boundary', name: '海域边界红线', visible: true, isBusiness: false },
@@ -83,11 +84,55 @@ export const globalStore = reactive({
         ]
       }
     ],
+    // '/digital': [
+    //   {
+    //     id: 'digital-core', label: '核心空间视图', open: true, visible: true,
+    //     children: [
+    //       { id: 'earth', label: '三维数字孪生底座', visible: true, x: 5, y: 0, w: 14, h: 16, type: 'earth' }
+    //     ]
+    //   },
+    //   {
+    //     id: 'digital-modeling', label: '单体设备建模', open: true, visible: true,
+    //     children: [
+    //       { id: 'dt-m1', label: '网箱建模', visible: true, x: 0, y: 0, w: 5, h: 3, type: 'action-card', props: { icon: '📦', name: '深水网箱主体', btnText: '建模' } },
+    //       { id: 'dt-m2', label: '浮标建模', visible: true, x: 0, y: 3, w: 5, h: 3, type: 'action-card', props: { icon: '🛟', name: '水质监测浮标', btnText: '建模' } },
+    //       { id: 'dt-m3', label: '传感器建模', visible: true, x: 0, y: 6, w: 5, h: 3, type: 'action-card', props: { icon: '🌡️', name: '多参数传感器', btnText: '建模' } },
+    //       { id: 'dt-m4', label: '投喂机建模', visible: true, x: 0, y: 9, w: 5, h: 3, type: 'action-card', props: { icon: '⚙️', name: '智能投喂机', btnText: '建模' } },
+    //       { id: 'dt-m5', label: '机器人建模', visible: true, x: 0, y: 12, w: 5, h: 3, type: 'action-card', props: { icon: '🤖', name: '水下巡检机器人', btnText: '建模' } }
+    //     ]
+    //   },
+    //   {
+    //     id: 'digital-field', label: '场剖分分析', open: true, visible: true,
+    //     children: [
+    //       // 使用和 OneMap 图层控制一模一样的结构
+    //       { id: 'dt-f1', label: '物理场显隐控制', visible: true, x: 19, y: 0, w: 5, h: 7, type: 'field-control', props: { 
+    //           fields: [
+    //             { id: 'f_flow', name: '综合流场', visible: false },
+    //             { id: 'f_temp', name: '温盐场', visible: false },
+    //             { id: 'f_current', name: '洋流海流', visible: false }
+    //           ] 
+    //         } 
+    //       },
+    //       { id: 'dt-f2', label: '剖切控制台', visible: true, x: 19, y: 7, w: 5, h: 9, type: 'sliders', props: { 
+    //           title: '六自由度空间剖切', 
+    //           sliders: [
+    //             { label: 'X轴平移', min: -100, max: 100, value: 0 },
+    //             { label: 'Y轴平移', min: -100, max: 100, value: 0 },
+    //             { label: 'Z轴平移', min: -100, max: 0, value: -10 },
+    //             { label: '俯仰角', min: -90, max: 90, value: 0 },
+    //             { label: '偏航角', min: -180, max: 180, value: 0 },
+    //             { label: '翻滚角', min: -180, max: 180, value: 0 }
+    //           ] 
+    //         } 
+    //       }
+    //     ]
+    //   }
+    // ],
     '/digital': [
       {
         id: 'digital-core', label: '核心空间视图', open: true, visible: true,
         children: [
-          { id: 'earth', label: '三维数字孪生底座', visible: true, x: 5, y: 0, w: 14, h: 16, type: 'earth' }
+          { id: 'earth', label: '三维数字孪生底座', visible: true, x: 5, y: 0, w: 14, h: 27, type: 'earth' }
         ]
       },
       {
@@ -103,26 +148,36 @@ export const globalStore = reactive({
       {
         id: 'digital-field', label: '场剖分分析', open: true, visible: true,
         children: [
-          // 使用和 OneMap 图层控制一模一样的结构
-          { id: 'dt-f1', label: '物理场显隐控制', visible: true, x: 19, y: 0, w: 5, h: 7, type: 'field-control', props: { 
-              fields: [
-                { id: 'f_flow', name: '综合流场', visible: false },
-                { id: 'f_temp', name: '温盐场', visible: false },
-                { id: 'f_current', name: '洋流海流', visible: false }
-              ] 
-            } 
+          { id: 'dt-f1', label: '物理场显隐控制', visible: true, x: 19, y: 0, w: 5, h: 7, type: 'field-control', props: { fields: [{ id: 'f_flow', name: '综合流场', visible: false }, { id: 'f_temp', name: '温盐场', visible: false }, { id: 'f_current', name: '洋流海流', visible: false }] } },
+          { id: 'dt-f2', label: '剖切控制台', visible: true, x: 19, y: 7, w: 5, h: 9, type: 'sliders', props: { title: '六自由度空间剖切', sliders: [{ label: 'X轴平移', min: -100, max: 100, value: 0 }, { label: 'Y轴平移', min: -100, max: 100, value: 0 }, { label: 'Z轴平移', min: -100, max: 0, value: -10 }, { label: '俯仰角', min: -90, max: 90, value: 0 }, { label: '偏航角', min: -180, max: 180, value: 0 }, { label: '翻滚角', min: -180, max: 180, value: 0 }] } }
+        ]
+      },
+      {
+        id: 'digital-entity-mgmt', label: '孪生实体管理', open: true, visible: true,
+        children: [
+          {
+            id: 'dt-tree', label: '实体显隐控制层级树', visible: true, x: 0, y: 15, w: 5, h: 12, type: 'entity-tree',
+            props: {
+              entities: [
+                { id: 'e1', name: '1号深水网箱', visible: true, expanded: true, children: [ { id: 'c1', name: '三维高精模型', visible: true }, { id: 'c2', name: '周边流速矢量场', visible: true }, { id: 'c3', name: '水温分布栅格场', visible: false } ] },
+                { id: 'e2', name: '主干环境浮标', visible: true, expanded: false, children: [ { id: 'c4', name: '设备物理模型', visible: true }, { id: 'c5', name: '实时监测点位数据', visible: true } ] },
+                { id: 'e3', name: '海底巡检机器人', visible: false, expanded: false, children: [ { id: 'c6', name: '机器人骨骼模型', visible: false }, { id: 'c7', name: '历史巡检轨迹线', visible: false }, { id: 'c8', name: '实时视频流点', visible: false } ] }
+              ]
+            }
           },
-          { id: 'dt-f2', label: '剖切控制台', visible: true, x: 19, y: 7, w: 5, h: 9, type: 'sliders', props: { 
-              title: '六自由度空间剖切', 
-              sliders: [
-                { label: 'X轴平移', min: -100, max: 100, value: 0 },
-                { label: 'Y轴平移', min: -100, max: 100, value: 0 },
-                { label: 'Z轴平移', min: -100, max: 0, value: -10 },
-                { label: '俯仰角', min: -90, max: 90, value: 0 },
-                { label: '偏航角', min: -180, max: 180, value: 0 },
-                { label: '翻滚角', min: -180, max: 180, value: 0 }
-              ] 
-            } 
+          {
+            id: 'dt-attr', label: '实体属性信息', visible: true, x: 19, y: 16, w: 5, h: 11, type: 'entity-attr',
+            props: {
+              title: '1号深水网箱',
+              attributes: [
+                { key: '实体空间编码', value: 'CAGE-DW-001' },
+                { key: '数字孪生类型', value: '生产设施实体' },
+                { key: '三维空间坐标', value: '121.5E, 28.6N, -5M' },
+                { key: '设计抗风浪等级', value: '14级强台风' },
+                { key: '外围网衣材质', value: '超高分子量聚乙烯' },
+                { key: '数据同步状态', value: '实时在线 (健康)', status: 'ok' }
+              ]
+            }
           }
         ]
       }
@@ -182,6 +237,28 @@ export const globalStore = reactive({
           { id: 'om-b2', label: '工作船只定位监控', visible: true, x: 19, y: 12, w: 5, h: 12, type: 'video', props: { cameraName: '智能自动投喂无人船甲板机位' } },
           { id: 'om-b3', label: '多传感器时序曲线', visible: true, x: 5, y: 16, w: 7, h: 8, type: 'line', props: { title: '物联网传感器24小时环境监控', xAxisData: ['04:00', '08:00', '12:00', '16:00'], seriesData: [{name: '溶解氧(mg/L)', data: [6.8, 6.2, 5.9, 6.4]}, {name: '盐度(‰)', data: [31.2, 31.1, 31.4, 31.3]}] } },
           { id: 'om-b4', label: '自动调控生产终端', visible: true, x: 12, y: 16, w: 7, h: 8, type: 'list', props: { title: '自主运行调控设备清单', actionText: '指令统发', listData: [{ tagText: '变频增氧', statusType: 'success', time: '高能效', title: '深层叶轮增氧机组', descPrefix: '瞬时功率', descHighlight: '5.5kW' }, { tagText: '精密投喂', statusType: 'warning', time: '抛撒中', title: '中央气动下料系统', descPrefix: '下料频率', descHighlight: '20kg/min' }] } }
+        ]
+      }
+    ],
+    '/report': [
+      {
+        id: 'group-statistical',
+        label: '统计报告',
+        open: true,
+        visible: true,
+        children: [
+          { id: 'rep-data', label: '数据统计报表', visible: true, x: 0, y: 0, w: 12, h: 14, type: 'statistical-report', props: { reportType: 'data' } },
+          { id: 'rep-device', label: '设备统计报表', visible: true, x: 12, y: 0, w: 12, h: 14, type: 'statistical-report', props: { reportType: 'device' } }
+        ]
+      },
+      {
+        id: 'group-special',
+        label: '专题报告',
+        open: true,
+        visible: true,
+        children: [
+          { id: 'rep-risk', label: '风险评估报告', visible: true, x: 0, y: 14, w: 12, h: 14, type: 'special-report', props: { reportType: 'risk' } },
+          { id: 'rep-control', label: '调控决策报告', visible: true, x: 12, y: 14, w: 12, h: 14, type: 'special-report', props: { reportType: 'control' } }
         ]
       }
     ]
