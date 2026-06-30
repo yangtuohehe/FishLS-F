@@ -16,10 +16,10 @@ const router = createRouter({
     { path: '/monitor', component: RealtimeMonitor },
     { path: '/onemap', component: OneMap },
     { path: '/control', component: ControlCenter },
-    { path: '/digital', name: 'DigitalTwin',component: DigitalTwin },
+    { path: '/digital', component: DigitalTwin },
     { path: '/spatial', component: SpatialData },
     { path: '/report', component: ReportSummary },
-    { path: '/system', component: SystemManagement },
+    { path: '/system', component: SystemManagement }
   ]
 });
 
