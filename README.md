@@ -1,7 +1,25 @@
-# Vue 3 + Vite
+# 海洋牧场数字孪生前端系统
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+本项目是一个专门为海洋牧场设计的数字孪生前端展示系统。工程整体基于 Vue 3 核心框架进行开发。开发环境选择了 Vite 构建工具，以保证代码的编译速度与实时热更新效率。
 
-## Recommended IDE Setup
+界面的动态布局能力是本项目的重要特征。系统底层引入了 grid-layout-plus 依赖库。该库配合前端响应式状态，实现了各类监控卡片和视频界面的自由拖拽与网格尺寸调整。
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+三维数字孪生场景是本系统的核心视图部分。项目集成了 Cesium 开源框架来进行真实比例的三维地球与海洋底座渲染。
+
+为了解决复杂的三维引擎资源加载问题，工程在配置文件中配置了 vite-plugin-cesium 插件。该插件专门负责处理引擎静态资源的解析与打包构建。
+
+业务数据的可视化展现完全依赖于 ECharts 图表库。开发人员将折线图和饼图等常用统计图形进行了二次封装。这些封装后的组件能够自适应上层网格容器的尺寸变动，用于实时反映水质指标等核心业务数据。
+
+页面间的逻辑导航通过 vue-router 模块进行统一定义与管理。具体包含数字孪生、实时监测以及时空数据管理等核心业务页面，均由路由中心进行按需分发。
+
+在全局状态维护方面，项目没有引入复杂的第三方状态管理库。系统直接利用 Vue 原生提供的 reactive 响应式接口在 src/store.js 中构建了一个轻量级的全局数据总线，用于统一下发菜单状态与设备坐标。
+
+系统的核心模块职责划分十分明确。所有的三维挂载容器、视频播放控件和数据展示卡片等基础元素被统一归置在 src/components 目录之中。
+
+涉及数据资源调度和界面统筹整合的具体业务逻辑，则被组织在独立的 src/views 视图目录内。
+
+开展后续开发工作之前，开发者需要在项目根目录下执行 npm install 指令，以安装 package.json 声明文件中的所有依赖环境。依赖配置完成后，执行 npm run dev 指令即可启动本地开发服务器进行业务代码的调试。
+
+在进行具体业务的二次开发时，新增的复用型图表或交互挂件应当创建在 src/components 目录下。若需要新增独立的功能页面，则必须在 src/views 目录中编写页面主体，随后在 src/router/index.js 中补充对应的路由映射。
+
+当需要对网格布局页面进行结构调整或增删模块时，开发者应当直接修改 src/store.js 中的坐标及尺寸配置。严禁在单个组件内部独立实例化新的 Cesium 三维地球，必须通过底层的实例借用机制来复用现有的渲染底座。
