@@ -82,7 +82,7 @@
     </div>
 </template>
   
-<script setup>
+<!-- <script setup>
 import { ref, watch } from 'vue';
 import { GridLayout, GridItem } from 'grid-layout-plus';
 import { globalStore } from '../store.js';
@@ -133,8 +133,111 @@ watch(
     },
     { immediate: true, deep: true }
 );
-</script>
+</script> -->
   
+<script setup>
+import { ref, watch, onMounted, onUnmounted } from 'vue';
+import { GridLayout, GridItem } from 'grid-layout-plus';
+import { globalStore } from '../store.js';
+import CesiumViewer from '../components/ui/CesiumViewer.vue';
+
+const layout = ref([]);
+let ws = null;
+
+const toggleEntityVisibility = (entity) => {
+    if (entity.children && entity.children.length > 0) {
+        entity.children.forEach(child => {
+            child.visible = entity.visible;
+        });
+    }
+};
+
+watch(
+    () => {
+        const menus = globalStore.pageMenus['/digital'];
+        if (!menus) return '';
+        return menus.map(group => {
+            const groupVisible = group.visible ? 'T' : 'F';
+            const childrenVisible = group.children ? group.children.map(child => child.visible ? 'T' : 'F').join('') : '';
+            return groupVisible + childrenVisible;
+        }).join('-');
+    },
+    () => {
+        const flatLayout = [];
+        const menus = globalStore.pageMenus['/digital'];
+        if (menus) {
+            menus.forEach(group => {
+                if (group.visible && group.children) {
+                    group.children.forEach(child => {
+                        if (child.visible) {
+                            flatLayout.push({
+                                ...child,
+                                i: child.id,
+                                x: child.x,
+                                y: child.y,
+                                w: child.w,
+                                h: child.h
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        layout.value = flatLayout;
+    },
+    { immediate: true, deep: true }
+);
+
+const initDigitalTwin = async () => {
+    try {
+        const response = await fetch('/api/v1/twin/init', {
+            method: 'POST' 
+        });
+        if (response.ok) {
+            connectWebSocket();
+        } else {
+            console.error('状态码异常:', response.status);
+        }
+    } catch (error) {
+        console.error('初始化请求失败:', error);
+    }
+};
+
+const connectWebSocket = () => {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${protocol}//${window.location.host}/ws/digital_twin`;
+    
+    ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+        console.log('WebSocket 连接成功');
+    };
+
+    ws.onmessage = (event) => {
+        console.log('收到后端实时数据:', event.data);
+    };
+
+    ws.onerror = (error) => {
+        console.error('WebSocket 连接发生错误:', error);
+    };
+
+    ws.onclose = () => {
+        console.log('WebSocket 连接已经关闭');
+    };
+};
+
+onMounted(() => {
+    initDigitalTwin();
+});
+
+onUnmounted(() => {
+    if (ws) {
+        ws.close();
+    }
+});
+</script>
+
+
 <style scoped>
 .digital-grid-container { width: 100%; height: calc(100vh - 55px); overflow: auto; background: #f0f2f5; position: relative; }
 .grid-item-wrapper { background: #ffffff; border: 1px solid #ebeef5; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); color: #303133; transition: box-shadow 0.3s ease; display: flex; flex-direction: column; }
