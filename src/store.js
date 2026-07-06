@@ -5,12 +5,12 @@ export const globalStore = reactive({
   sidebarVisible: true,
   controlState: {
     valveStates: {
-      'b1111111-1111-1111-1111-111111111111': { mode: 'manual', isOpen: false }
+      'DEV-VALVE-001': { mode: 'manual', isOpen: false }
     },
     rules: [
       {
         id: 'rule_default_1',
-        content: "IF (AVG( ['a1111111-1111-1111-1111-111111111111'], ['a2222222-2222-2222-2222-222222222222'], ['a3333333-3333-3333-3333-333333333333'], ['a4444444-4444-4444-4444-444444444444'], ['a5555555-5555-5555-5555-555555555555'] ) > 0.3) THEN CLOSE ['b1111111-1111-1111-1111-111111111111']"
+        content: "IF (AVG( ['DEV-ST-001'], ['DEV-ST-002'], ['DEV-ST-003'], ['DEV-ST-004'], ['DEV-ST-005'] ) > 0.3) THEN CLOSE ['DEV-VALVE-001']"
       }
     ],
     deviceCoordinates: {} 
@@ -160,17 +160,17 @@ export const globalStore = reactive({
       {
         id: 'control-stations', label: '观测站点实时曲线', open: true, visible: true,
         children: [
-          { id: 'st1', label: '东海一号', visible: true, x: 0, y: 0, w: 5, h: 6, type: 'line', props: { deviceId: 'a1111111-1111-1111-1111-111111111111', title: '东海一号盐度(连接中...)', xAxisData: ['0h','4h','8h','12h','16h','20h','24h'], seriesData: [{name:'盐度(‰)', data:[0,0,0,0,0,0,0]}] } },
-          { id: 'st2', label: '东海二号', visible: true, x: 0, y: 6, w: 5, h: 6, type: 'line', props: { deviceId: 'a2222222-2222-2222-2222-222222222222', title: '东海二号盐度(连接中...)', xAxisData: ['0h','4h','8h','12h','16h','20h','24h'], seriesData: [{name:'盐度(‰)', data:[0,0,0,0,0,0,0]}] } },
-          { id: 'st3', label: '南海一号', visible: true, x: 0, y: 12, w: 5, h: 6, type: 'line', props: { deviceId: 'a3333333-3333-3333-3333-333333333333', title: '南海一号盐度(连接中...)', xAxisData: ['0h','4h','8h','12h','16h','20h','24h'], seriesData: [{name:'盐度(‰)', data:[0,0,0,0,0,0,0]}] } },
-          { id: 'st4', label: '南海二号', visible: true, x: 19, y: 0, w: 5, h: 6, type: 'line', props: { deviceId: 'a4444444-4444-4444-4444-444444444444', title: '南海二号盐度(连接中...)', xAxisData: ['0h','4h','8h','12h','16h','20h','24h'], seriesData: [{name:'盐度(‰)', data:[0,0,0,0,0,0,0]}] } },
-          { id: 'st5', label: '黄海一号', visible: true, x: 19, y: 6, w: 5, h: 6, type: 'line', props: { deviceId: 'a5555555-5555-5555-5555-555555555555', title: '黄海一号盐度(连接中...)', xAxisData: ['0h','4h','8h','12h','16h','20h','24h'], seriesData: [{name:'盐度(‰)', data:[0,0,0,0,0,0,0]}] } }
+          { id: 'st1', label: '东海一号', visible: true, x: 0, y: 0, w: 5, h: 6, type: 'line', props: { deviceId: 'DEV-ST-001', title: '东海一号盐度(连接中...)', xAxisData: ['0h','4h','8h','12h','16h','20h','24h'], seriesData: [{name:'盐度(‰)', data:[0,0,0,0,0,0,0]}] } },
+          { id: 'st2', label: '东海二号', visible: true, x: 0, y: 6, w: 5, h: 6, type: 'line', props: { deviceId: 'DEV-ST-002', title: '东海二号盐度(连接中...)', xAxisData: ['0h','4h','8h','12h','16h','20h','24h'], seriesData: [{name:'盐度(‰)', data:[0,0,0,0,0,0,0]}] } },
+          { id: 'st3', label: '南海一号', visible: true, x: 0, y: 12, w: 5, h: 6, type: 'line', props: { deviceId: 'DEV-ST-003', title: '南海一号盐度(连接中...)', xAxisData: ['0h','4h','8h','12h','16h','20h','24h'], seriesData: [{name:'盐度(‰)', data:[0,0,0,0,0,0,0]}] } },
+          { id: 'st4', label: '南海二号', visible: true, x: 19, y: 0, w: 5, h: 6, type: 'line', props: { deviceId: 'DEV-ST-004', title: '南海二号盐度(连接中...)', xAxisData: ['0h','4h','8h','12h','16h','20h','24h'], seriesData: [{name:'盐度(‰)', data:[0,0,0,0,0,0,0]}] } },
+          { id: 'st5', label: '黄海一号', visible: true, x: 19, y: 6, w: 5, h: 6, type: 'line', props: { deviceId: 'DEV-ST-005', title: '黄海一号盐度(连接中...)', xAxisData: ['0h','4h','8h','12h','16h','20h','24h'], seriesData: [{name:'盐度(‰)', data:[0,0,0,0,0,0,0]}] } }
         ]
       },
       {
         id: 'control-action', label: '虚实交互设备与规则', open: true, visible: true,
         children: [
-          { id: 'valve1', label: '主干道一号入水控制阀', visible: true, x: 19, y: 12, w: 5, h: 6, type: 'valve-control', props: { deviceId: 'b1111111-1111-1111-1111-111111111111', deviceName: '主干道一号入水控制阀' } },
+          { id: 'valve1', label: '主干道一号入水控制阀', visible: true, x: 19, y: 12, w: 5, h: 6, type: 'valve-control', props: { deviceId: 'DEV-VALVE-001', deviceName: '主干道一号入水控制阀' } },
           { id: 'rule1', label: '数字孪生关联规则引擎', visible: true, x: 5, y: 20, w: 14, h: 4, type: 'rule-editor', props: {} }
         ]
       }
@@ -204,7 +204,6 @@ export const globalStore = reactive({
       }
     ],
     '/onemap': [
-      // 新增：将图层控制和地球注册到二级菜单数据源中
       {
         id: 'onemap-core', label: '核心空间视图', open: true, visible: true,
         children: [

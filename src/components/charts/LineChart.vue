@@ -67,7 +67,19 @@ onUnmounted(() => {
   if (myChart) myChart.dispose();
 });
 
-watch([() => props.xAxisData, () => props.seriesData], init, { deep: true });
+const updateChartData = () => {
+  if (!myChart) return;
+  // 仅更新数据项，ECharts会自动处理平滑动画过渡
+  myChart.setOption({
+    xAxis: { data: props.xAxisData },
+    series: props.seriesData.map((item) => ({
+      name: item.name,
+      data: item.data
+    }))
+  });
+};
+
+watch([() => props.xAxisData, () => props.seriesData], updateChartData, { deep: true });
 </script>
 
 <style scoped>

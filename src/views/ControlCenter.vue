@@ -90,12 +90,13 @@
   </div>
 </template>
 
-<script setup>
+<!-- <script setup>
 import { ref, watch, onMounted } from 'vue';
 import { GridLayout, GridItem } from 'grid-layout-plus';
 import { globalStore } from '../store.js';
 import CesiumViewer from '../components/ui/CesiumViewer.vue';
 import LineChart from '../components/charts/LineChart.vue';
+import { ref, watch, onMounted, onUnmounted } from 'vue';
 
 const layout = ref([]);
 
@@ -250,12 +251,366 @@ const fetchInitialDeviceData = async () => {
   } catch (error) {
     console.warn('获取观测时序失败，保持前端默认归零数据展示', error);
   }
+
+  let ws = null;
+
+// 定向更新图表数据的辅助函数
+const updateChartData = (deviceId, value, timestamp) => {
+  let timeStr = '';
+  // 兼容后端的毫秒时间戳与特殊格式字符串
+  if (typeof timestamp === 'string') {
+    const parts = timestamp.split('.');
+    timeStr = parts.length >= 6 ? `${parts[3]}:${parts[4]}:${parts[5]}` : timestamp;
+  } else {
+    timeStr = new Date(timestamp).toLocaleTimeString('zh-CN', { hour12: false });
+  }
+
+  const menus = globalStore.pageMenus['/control'];
+  menus.forEach(group => {
+    if (!group.children) return;
+    group.children.forEach(child => {
+      if (child.type === 'line' && child.props.deviceId === deviceId) {
+        // 更新标题状态
+        child.props.title = child.props.title.replace('(连接中...)', '(实时在线)');
+        
+        // 压入新数据
+        child.props.xAxisData.push(timeStr);
+        child.props.seriesData[0].data.push(value);
+
+        // 维持时间窗口最大长度（防止内存溢出，这里设定保留最新的20个点）
+        if (child.props.xAxisData.length > 20) {
+          child.props.xAxisData.shift();
+          child.props.seriesData[0].data.shift();
+        }
+      }
+    });
+  });
+};
+
+const initWebSocket = () => {
+  // 根据实际后端地址配置，开发环境下通常为 localhost:8080
+  const wsUrl = `ws://${window.location.hostname}:8080/ws/digital_twin`; 
+  ws = new WebSocket(wsUrl);
+
+  ws.onmessage = (event) => {
+    try {
+      const data = JSON.parse(event.data);
+
+      // 1. 处理全局握手响应
+      if (data.stations) {
+        data.stations.forEach(station => {
+          updateChartData(station.station_id, station.salinity, station.timestamp);
+        });
+      }
+      if (data.valve_info) {
+        const v = data.valve_info;
+        if (globalStore.controlState.valveStates[v.device_id]) {
+          globalStore.controlState.valveStates[v.device_id].isOpen = (v.valve_state === 1.0);
+        }
+      }
+
+      // 2. 处理实时动态数据流
+      if (data.device_id && data.records) {
+        const deviceId = data.device_id;
+        data.records.forEach(record => {
+          const payload = record.payload;
+          
+          // 更新水阀开关状态
+          if (payload.valve_state !== undefined) {
+            if (!globalStore.controlState.valveStates[deviceId]) {
+              globalStore.controlState.valveStates[deviceId] = { mode: 'manual', isOpen: false };
+            }
+            globalStore.controlState.valveStates[deviceId].isOpen = (payload.valve_state === 1.0);
+          }
+          
+          // 更新监测站水质数据
+          const val = payload.salinity !== undefined ? payload.salinity : Object.values(payload)[0];
+          if (val !== undefined) {
+            updateChartData(deviceId, val, record.timestamp);
+          }
+        });
+      }
+    } catch (error) {
+      console.warn("WebSocket 消息解析异常:", error);
+    }
+  };
+
+  ws.onclose = () => {
+    console.warn("WebSocket 连接断开，3秒后尝试重连...");
+    setTimeout(initWebSocket, 3000);
+  };
+};
+
+
+
 };
 
 onMounted(() => {
   fetchInitialDeviceData();
+  initWebSocket(); // 启动 WebSocket 监听
+});
+
+onUnmounted(() => {
+  if (ws) {
+    ws.onclose = null; // 避免触发重连机制
+    ws.close();
+  }
+});
+</script> -->
+
+<script setup>
+import { ref, watch, onMounted, onUnmounted } from 'vue';
+import { GridLayout, GridItem } from 'grid-layout-plus';
+import { globalStore } from '../store.js';
+import CesiumViewer from '../components/ui/CesiumViewer.vue';
+import LineChart from '../components/charts/LineChart.vue';
+
+const layout = ref([]);
+let ws = null;
+
+watch(
+  () => {
+    const menus = globalStore.pageMenus['/control'];
+    if (!menus) return '';
+    return menus.map(group => {
+      const groupVisible = group.visible ? 'T' : 'F';
+      const childrenVisible = group.children ? group.children.map(child => child.visible ? 'T' : 'F').join('') : '';
+      return groupVisible + childrenVisible;
+    }).join('-');
+  },
+  () => {
+    const flatLayout = [];
+    const menus = globalStore.pageMenus['/control'];
+    if (menus) {
+      menus.forEach(group => {
+        if (group.visible && group.children) {
+          group.children.forEach(child => {
+            if (child.visible) {
+              flatLayout.push({ ...child, i: child.id });
+            }
+          });
+        }
+      });
+    }
+    layout.value = flatLayout;
+  },
+  { immediate: true }
+);
+
+const handleItemClick = (item) => {
+  if (item.type !== 'earth' && item.props && item.props.deviceId) {
+    const coords = globalStore.controlState.deviceCoordinates[item.props.deviceId];
+    if (coords) {
+      window.dispatchEvent(new CustomEvent('map-fly-to-device', { 
+        detail: { lng: coords.lng, lat: coords.lat, alt: coords.alt || 500 } 
+      }));
+    }
+  }
+};
+
+const getParsedDeviceCount = (content) => {
+  const ids = content.match(/DEV-(ST|VALVE)-\d{3}/gi) || [];
+  return new Set(ids).size;
+};
+
+const getRuleIndicatorClass = (content) => {
+  const ids = content.match(/DEV-(ST|VALVE)-\d{3}/gi) || [];
+  let isAuto = false;
+  for (const id of ids) {
+    if (globalStore.controlState.valveStates[id] && globalStore.controlState.valveStates[id].mode === 'auto') {
+      isAuto = true;
+      break;
+    }
+  }
+  return isAuto ? 'active-green' : 'inactive-grey';
+};
+
+const toggleValveMode = async (deviceId, mode) => {
+  if (!globalStore.controlState.valveStates[deviceId]) {
+    globalStore.controlState.valveStates[deviceId] = { mode: 'manual', isOpen: false };
+  }
+  try {
+    await fetch('/api/v1/control/mode', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deviceId: deviceId, mode: mode })
+    });
+  } catch (error) {
+    console.warn('模式切换网络请求中断，已进入脱机推演状态');
+  }
+  globalStore.controlState.valveStates[deviceId].mode = mode;
+};
+
+const executeValveCommand = async (deviceId, isOpen) => {
+  if (!globalStore.controlState.valveStates[deviceId]) {
+    globalStore.controlState.valveStates[deviceId] = { mode: 'manual', isOpen: false };
+  }
+  try {
+    const targetValue = isOpen ? 1.0 : 0.0;
+    await fetch('/api/v1/control/command', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deviceId: deviceId, targetValue: targetValue })
+    });
+  } catch (error) {
+    console.warn('物理指令下发链路异常，已记录到脱机事务日志');
+  }
+  globalStore.controlState.valveStates[deviceId].isOpen = isOpen;
+};
+
+const submitRuleUpdate = async () => {
+  try {
+    await fetch('/api/v1/rules/declaration', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ rules: globalStore.controlState.rules })
+    });
+  } catch (error) {
+    console.warn('规则引擎序列化同步被阻断');
+  }
+};
+
+const addNewRule = () => {
+  globalStore.controlState.rules.push({
+    id: 'rule_' + Date.now(),
+    content: '输入带标识的逻辑表达式进行解析...'
+  });
+};
+
+const deleteRule = (index) => {
+  globalStore.controlState.rules.splice(index, 1);
+  submitRuleUpdate();
+};
+
+const fetchInitialDeviceData = async () => {
+  const deviceIds = layout.value
+    .filter(item => item.type !== 'earth' && item.props && item.props.deviceId)
+    .map(item => item.props.deviceId);
+
+  if (deviceIds.length === 0) return;
+
+  try {
+    const locationRes = await fetch(`/api/v1/entities/locations?ids=${deviceIds.join(',')}`);
+    if (locationRes.ok) {
+      const locationData = await locationRes.json();
+      if (locationData && locationData.data) {
+        globalStore.controlState.deviceCoordinates = locationData.data;
+      }
+    }
+  } catch (error) {
+    console.warn('获取设备坐标失败，保持脱机占位数据', error);
+  }
+
+  try {
+    const historyRes = await fetch(`/api/v1/observations/history/batch?ids=${deviceIds.join(',')}`);
+    if (historyRes.ok) {
+      const historyData = await historyRes.json();
+      if (historyData && historyData.data) {
+        layout.value.forEach(item => {
+          if (item.type === 'line' && historyData.data[item.props.deviceId]) {
+            const chartData = historyData.data[item.props.deviceId];
+            item.props.title = chartData.title || item.props.title.replace('(连接中...)', '(24h)');
+            item.props.xAxisData = chartData.xAxis;
+            item.props.seriesData = chartData.series;
+          }
+        });
+      }
+    }
+  } catch (error) {
+    console.warn('获取观测时序失败，保持前端默认归零数据展示', error);
+  }
+};
+
+const updateChartData = (deviceId, value, timestamp) => {
+  let timeStr = '';
+  if (typeof timestamp === 'string') {
+    const parts = timestamp.split('.');
+    timeStr = parts.length >= 6 ? `${parts[3]}:${parts[4]}:${parts[5]}` : timestamp;
+  } else {
+    timeStr = new Date(timestamp).toLocaleTimeString('zh-CN', { hour12: false });
+  }
+
+  const menus = globalStore.pageMenus['/control'];
+  menus.forEach(group => {
+    if (!group.children) return;
+    group.children.forEach(child => {
+      if (child.type === 'line' && child.props.deviceId === deviceId) {
+        child.props.title = child.props.title.replace('(连接中...)', '(实时在线)');
+        child.props.xAxisData.push(timeStr);
+        child.props.seriesData[0].data.push(value);
+
+        if (child.props.xAxisData.length > 20) {
+          child.props.xAxisData.shift();
+          child.props.seriesData[0].data.shift();
+        }
+      }
+    });
+  });
+};
+
+const initWebSocket = () => {
+  const wsUrl = `ws://${window.location.hostname}:8080/ws/digital_twin`; 
+  ws = new WebSocket(wsUrl);
+
+  ws.onmessage = (event) => {
+    try {
+      const data = JSON.parse(event.data);
+
+      if (data.stations) {
+        data.stations.forEach(station => {
+          updateChartData(station.station_id, station.salinity, station.timestamp);
+        });
+      }
+      
+      if (data.valve_info) {
+        const v = data.valve_info;
+        if (globalStore.controlState.valveStates[v.device_id]) {
+          globalStore.controlState.valveStates[v.device_id].isOpen = (v.valve_state === 1.0);
+        }
+      }
+
+      if (data.device_id && data.records) {
+        const deviceId = data.device_id;
+        data.records.forEach(record => {
+          const payload = record.payload;
+          
+          if (payload.valve_state !== undefined) {
+            if (!globalStore.controlState.valveStates[deviceId]) {
+              globalStore.controlState.valveStates[deviceId] = { mode: 'manual', isOpen: false };
+            }
+            globalStore.controlState.valveStates[deviceId].isOpen = (payload.valve_state === 1.0);
+          }
+          
+          const val = payload.salinity !== undefined ? payload.salinity : Object.values(payload)[0];
+          if (val !== undefined) {
+            updateChartData(deviceId, val, record.timestamp);
+          }
+        });
+      }
+    } catch (error) {
+      console.warn("WebSocket 消息解析异常:", error);
+    }
+  };
+
+  ws.onclose = () => {
+    console.warn("WebSocket 连接断开，3秒后尝试重连...");
+    setTimeout(initWebSocket, 3000);
+  };
+};
+
+onMounted(() => {
+  fetchInitialDeviceData();
+  initWebSocket();
+});
+
+onUnmounted(() => {
+  if (ws) {
+    ws.onclose = null;
+    ws.close();
+  }
 });
 </script>
+
 
 <style scoped>
 .control-center-grid {
